@@ -323,7 +323,7 @@ Begin VB.Form Form1
       EndProperty
    End
    Begin VB.Label Label3 
-      Caption         =   "Unmatched Sample A                                                                  Unmatched sample B"
+      Caption         =   "Unmatched Sample 1                                                                  Unmatched sample 2"
       Height          =   195
       Left            =   60
       TabIndex        =   4
@@ -353,6 +353,10 @@ Begin VB.Form Form1
          Caption         =   "Remove UnSelected"
          Index           =   4
       End
+      Begin VB.Menu mnuCheckAll 
+         Caption         =   "Select all w/Default names"
+         Index           =   5
+      End
    End
    Begin VB.Menu mnuPopupRename 
       Caption         =   "mnuPopupRename"
@@ -362,11 +366,11 @@ Begin VB.Form Form1
          Index           =   0
       End
       Begin VB.Menu mnuRename 
-         Caption         =   "Port names from A to B"
+         Caption         =   "Port names from 1 to 2"
          Index           =   1
       End
       Begin VB.Menu mnuRename 
-         Caption         =   "Port names from B to A"
+         Caption         =   "Port names from 2 to 1"
          Index           =   2
       End
       Begin VB.Menu mnuRename 
@@ -1165,6 +1169,9 @@ Public Sub lv1_ItemClick(ByVal Item As MSComctlLib.ListItem)
     Dim rs As Recordset
     Dim asm As String
     
+    Item.Selected = True
+    Item.EnsureVisible
+    
     Set rs = ado("Select * from a where autoid=" & Item.Tag)
     asm = rs!disasm
     txtA = asm
@@ -1186,6 +1193,9 @@ End Sub
 Public Sub lv2_ItemClick(ByVal Item As MSComctlLib.ListItem)
     Dim rs As Recordset
     Dim asm As String
+    
+    Item.Selected = True
+    Item.EnsureVisible
     
     Set rs = ado("Select disasm from b where autoid=" & Item.Tag)
     asm = rs!disasm
@@ -1245,6 +1255,7 @@ End Sub
 
 Private Sub mnuCheckAll_Click(index As Integer)
     
+    On Error Resume Next
     Dim li As ListItem
     
 Top:
@@ -1255,6 +1266,12 @@ Top:
             Case 2: li.Selected = Not li.Selected
             Case 3: If li.Selected Then lvExact.ListItems.Remove li.index: GoTo Top
             Case 4: If Not li.Selected Then lvExact.ListItems.Remove li.index: GoTo Top
+            Case 5:
+                    If Len(li.Text) < 4 Then
+                        li.Selected = False
+                    Else
+                        li.Selected = IIf(VBA.left(li.Text, 4) = "sub_", True, False)
+                    End If
         End Select
     Next
     

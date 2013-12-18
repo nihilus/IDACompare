@@ -193,10 +193,10 @@ End Function
 Private Sub Form_Load()
     On Error Resume Next
     With lv1.ColumnHeaders(2)
-        .Width = lv1.Width - .Left - 100
+        .Width = lv1.Width - .left - 100
     End With
     With lv2.ColumnHeaders(2)
-        .Width = lv2.Width - .Left - 100
+        .Width = lv2.Width - .left - 100
     End With
 End Sub
 
@@ -211,7 +211,7 @@ End Sub
 'works for unmatched only
 Private Sub lv2_ItemClick(ByVal Item As MSComctlLib.ListItem)
     On Error Resume Next
-     Dim li As ListItem
+    Dim li As ListItem
     Set li = Form1.lv2.ListItems(Item.key)
     If Not li Is Nothing Then Form1.lv2_ItemClick li
 End Sub
