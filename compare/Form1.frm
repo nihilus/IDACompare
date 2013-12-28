@@ -1,28 +1,28 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
-   ClientHeight    =   7785
+   ClientHeight    =   8625
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   9000
+   ClientWidth     =   9990
    LinkTopic       =   "Form1"
-   ScaleHeight     =   7785
-   ScaleWidth      =   9000
+   ScaleHeight     =   8625
+   ScaleWidth      =   9990
    StartUpPosition =   2  'CenterScreen
    Begin VB.Frame Frame1 
-      Height          =   3795
+      Height          =   4605
       Left            =   0
       TabIndex        =   5
       Top             =   3960
-      Width           =   8955
+      Width           =   9885
       Begin VB.CommandButton cmdCurrentProfile 
          Caption         =   "P"
          Height          =   255
-         Left            =   4980
+         Left            =   4950
          TabIndex        =   20
-         Top             =   1020
+         Top             =   1620
          Width           =   315
       End
       Begin VB.CommandButton Command1 
@@ -38,7 +38,7 @@ Begin VB.Form Form1
          EndProperty
          Height          =   195
          Index           =   1
-         Left            =   4200
+         Left            =   4590
          TabIndex        =   19
          Top             =   60
          Width           =   375
@@ -57,80 +57,89 @@ Begin VB.Form Form1
          EndProperty
          Height          =   195
          Index           =   0
-         Left            =   4560
+         Left            =   4950
          TabIndex        =   18
          Top             =   60
          Width           =   375
       End
       Begin VB.TextBox txtReport 
-         Height          =   735
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   1275
          Left            =   60
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
          TabIndex        =   12
          Top             =   240
-         Width           =   8775
+         Width           =   9675
       End
       Begin VB.CommandButton Command2 
          Caption         =   "Load && Compare"
          Height          =   375
-         Left            =   7380
+         Left            =   8130
          TabIndex        =   11
-         Top             =   3300
+         Top             =   4110
          Width           =   1515
       End
       Begin VB.CommandButton cmdManualMatch 
          Caption         =   "Manual Match"
          Height          =   255
-         Left            =   6420
+         Left            =   6390
          TabIndex        =   9
-         Top             =   1020
+         Top             =   1620
          Width           =   1395
       End
       Begin VB.CommandButton cmdBreakMatch 
          Caption         =   "Break Match"
          Enabled         =   0   'False
          Height          =   255
-         Left            =   7860
+         Left            =   7830
          TabIndex        =   8
-         Top             =   1020
+         Top             =   1620
          Width           =   1035
       End
       Begin VB.CommandButton cmdFind 
          Caption         =   "Find"
          Height          =   255
-         Left            =   5340
+         Left            =   5310
          TabIndex        =   7
-         Top             =   1020
+         Top             =   1620
          Width           =   975
       End
       Begin VB.CheckBox chkExternalMatchs 
          Caption         =   "Check1"
          Height          =   255
-         Left            =   3300
+         Left            =   3270
          TabIndex        =   6
-         Top             =   1020
+         Top             =   1620
          Width           =   255
       End
       Begin MSComctlLib.ProgressBar pb 
          Height          =   315
-         Left            =   2400
+         Left            =   2250
          TabIndex        =   10
-         Top             =   3360
-         Width           =   4935
-         _ExtentX        =   8705
+         Top             =   4170
+         Width           =   5715
+         _ExtentX        =   10081
          _ExtentY        =   556
          _Version        =   393216
          Appearance      =   1
       End
       Begin MSComctlLib.ListView lvExact 
-         Height          =   1935
-         Left            =   60
+         Height          =   2145
+         Left            =   30
          TabIndex        =   13
-         Top             =   1320
-         Width           =   8835
-         _ExtentX        =   15584
-         _ExtentY        =   3413
+         Top             =   1920
+         Width           =   9645
+         _ExtentX        =   17013
+         _ExtentY        =   3784
          View            =   3
          LabelEdit       =   1
          MultiSelect     =   -1  'True
@@ -142,15 +151,24 @@ Begin VB.Form Form1
          BackColor       =   -2147483643
          BorderStyle     =   1
          Appearance      =   1
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Courier New"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
          NumItems        =   5
          BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             Text            =   "Name 1"
-            Object.Width           =   2540
+            Object.Width           =   3528
          EndProperty
          BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             SubItemIndex    =   1
             Text            =   "Name 2"
-            Object.Width           =   2540
+            Object.Width           =   3528
          EndProperty
          BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
             SubItemIndex    =   2
@@ -170,18 +188,18 @@ Begin VB.Form Form1
       End
       Begin VB.Label Label1 
          Height          =   315
-         Left            =   60
+         Left            =   30
          TabIndex        =   17
-         Top             =   3360
+         Top             =   4170
          Width           =   2295
       End
       Begin VB.Label Label2 
          Caption         =   "Matched Functions"
          Height          =   195
          Index           =   0
-         Left            =   120
+         Left            =   90
          TabIndex        =   16
-         Top             =   1080
+         Top             =   1680
          Width           =   1575
       End
       Begin VB.Label lblTransform 
@@ -192,9 +210,9 @@ Begin VB.Form Form1
          Caption         =   "Rename Tools"
          ForeColor       =   &H80000008&
          Height          =   255
-         Left            =   1740
+         Left            =   1710
          TabIndex        =   15
-         Top             =   1020
+         Top             =   1620
          Width           =   1395
       End
       Begin VB.Label lblExternal 
@@ -211,9 +229,9 @@ Begin VB.Form Form1
          EndProperty
          ForeColor       =   &H00FF0000&
          Height          =   195
-         Left            =   3600
+         Left            =   3570
          TabIndex        =   14
-         Top             =   1020
+         Top             =   1620
          Width           =   1395
       End
    End
@@ -225,30 +243,48 @@ Begin VB.Form Form1
       _ExtentY        =   1005
    End
    Begin VB.TextBox txtB 
+      BeginProperty Font 
+         Name            =   "Courier New"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   1515
-      Left            =   4620
+      Left            =   4950
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   3
       Top             =   2400
-      Width           =   4335
+      Width           =   4965
    End
    Begin VB.TextBox txtA 
+      BeginProperty Font 
+         Name            =   "Courier New"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   1515
       Left            =   0
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   2
       Top             =   2400
-      Width           =   4515
+      Width           =   4875
    End
    Begin MSComctlLib.ListView lv1 
       Height          =   2055
       Left            =   0
       TabIndex        =   0
       Top             =   300
-      Width           =   4515
-      _ExtentX        =   7964
+      Width           =   4905
+      _ExtentX        =   8652
       _ExtentY        =   3625
       View            =   3
       LabelEdit       =   1
@@ -261,6 +297,15 @@ Begin VB.Form Form1
       BackColor       =   -2147483643
       BorderStyle     =   1
       Appearance      =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Courier New"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       NumItems        =   4
       BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          Text            =   "i"
@@ -269,12 +314,12 @@ Begin VB.Form Form1
       BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   1
          Text            =   "sz"
-         Object.Width           =   882
+         Object.Width           =   1235
       EndProperty
       BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   2
          Text            =   "name"
-         Object.Width           =   2540
+         Object.Width           =   3528
       EndProperty
       BeginProperty ColumnHeader(4) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   3
@@ -284,11 +329,11 @@ Begin VB.Form Form1
    End
    Begin MSComctlLib.ListView lv2 
       Height          =   2055
-      Left            =   4620
+      Left            =   4950
       TabIndex        =   1
       Top             =   300
-      Width           =   4335
-      _ExtentX        =   7646
+      Width           =   4935
+      _ExtentX        =   8705
       _ExtentY        =   3625
       View            =   3
       LabelEdit       =   1
@@ -301,6 +346,15 @@ Begin VB.Form Form1
       BackColor       =   -2147483643
       BorderStyle     =   1
       Appearance      =   1
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Courier New"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       NumItems        =   4
       BeginProperty ColumnHeader(1) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          Text            =   "i"
@@ -309,12 +363,12 @@ Begin VB.Form Form1
       BeginProperty ColumnHeader(2) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   1
          Text            =   "sz"
-         Object.Width           =   882
+         Object.Width           =   1235
       EndProperty
       BeginProperty ColumnHeader(3) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   2
          Text            =   "name"
-         Object.Width           =   2540
+         Object.Width           =   3528
       EndProperty
       BeginProperty ColumnHeader(4) {BDD1F052-858B-11D1-B16A-00C0F0283628} 
          SubItemIndex    =   3
@@ -322,13 +376,21 @@ Begin VB.Form Form1
          Object.Width           =   2540
       EndProperty
    End
-   Begin VB.Label Label3 
-      Caption         =   "Unmatched Sample 1                                                                  Unmatched sample 2"
+   Begin VB.Label lblDBB 
+      Caption         =   "Unmatched sample 2"
+      Height          =   285
+      Left            =   5010
+      TabIndex        =   21
+      Top             =   30
+      Width           =   4935
+   End
+   Begin VB.Label lblDBA 
+      Caption         =   "Unmatched Sample 1"
       Height          =   195
       Left            =   60
       TabIndex        =   4
       Top             =   60
-      Width           =   6975
+      Width           =   4695
    End
    Begin VB.Menu mnuPopup 
       Caption         =   "mnuPopup"
@@ -356,6 +418,9 @@ Begin VB.Form Form1
       Begin VB.Menu mnuCheckAll 
          Caption         =   "Select all w/Default names"
          Index           =   5
+      End
+      Begin VB.Menu mnuCopySelection 
+         Caption         =   "Copy Selection"
       End
    End
    Begin VB.Menu mnuPopupRename 
@@ -453,6 +518,9 @@ Dim sel_1 As ListItem
 Dim sel_2 As ListItem
 Dim sel_exact As ListItem
 
+Dim idb_a As String
+Dim idb_b As String
+
 Enum CompareModes
     compare1 = 0
     compare2 = 1
@@ -539,8 +607,8 @@ End Sub
 Private Sub Form_Resize()
     
     On Error Resume Next
-    If Me.Height < 8190 Then Me.Height = 8190
-    If Me.Width < 9120 Then Me.Width = 9120
+    If Me.Height < 9030 Then Me.Height = 9030
+    If Me.Width < 10110 Then Me.Width = 10110
     
     Frame1.Top = Me.Height - Frame1.Height - 400
     txtA.Height = Frame1.Top - txtA.Top
@@ -553,6 +621,9 @@ Private Sub Form_Resize()
     lv1.Width = txtA.Width
     lv2.Width = txtB.Width
     lv2.left = txtB.left
+    
+    lv1.ColumnHeaders(lv1.ColumnHeaders.Count - 1).Width = lv1.Width - lv1.ColumnHeaders(lv1.ColumnHeaders.Count - 1).left - 100 - lv1.ColumnHeaders(lv1.ColumnHeaders.Count).Width
+    lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).Width = lv2.Width - lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).left - 100 - lv2.ColumnHeaders(lv2.ColumnHeaders.Count).Width
     
     Frame1.Width = Me.Width - 120
     txtReport.Width = Frame1.Width - 120
@@ -710,7 +781,8 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
     Dim rs As Recordset
     Dim li As ListItem
     Dim asm As String
-   
+    Dim idb As String
+    
     Dim t, u
     Dim tbl
     Dim isTableA As Boolean
@@ -723,6 +795,14 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
         Case compare2:      tbl = "b"
         Case SignatureScan: tbl = "signatures"
     End Select
+    
+    If mode = compare1 Then
+        idb_a = ado("Select top 1 idb from " & tbl)!idb
+        lblDBA = "1: " & idb_a
+    ElseIf mode = compare2 Then
+        idb_b = ado("Select top 1 idb from " & tbl)!idb
+        lblDBB = "2: " & idb_b
+    End If
     
     Set rs = ado("Select autoid,index,leng,fname,disasm from " & tbl & " where leng > " & minLen & clause)
     
@@ -787,10 +867,11 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
     
 End Sub
 
-Sub ExactCrcMatch()
+Function ExactCrcMatch() As Long
     
     Dim lit As ListItem
-      
+    Dim ret As Long
+    
     Label1 = "CRC Matching"
     
     For Each lit In lv1.ListItems
@@ -798,14 +879,46 @@ Sub ExactCrcMatch()
             Set c = a(lit.SubItems(3))
             Set h = b(lit.SubItems(3))
             AddToMatchCollection c, h, "Exact CRC"
+            ret = ret + 1
         End If
         pb.value = pb.value + 1
     Next
     
-End Sub
+    ExactCrcMatch = ret
+    
+End Function
 
-Sub CallPushMatch()
+Function NameMatch() As Long
 
+    Dim ret As Long
+    pb.value = 0
+    Label1 = "Public Name Matching"
+    
+    For Each c In a
+        For Each h In b
+            If Not c.matched And Not h.matched Then
+                 If c.Name = h.Name _
+                    And VBA.left(c.Name, 4) <> "sub_" _
+                    And VBA.left(c.Name, 4) <> "unkn" _
+                    And c.Name <> "start" _
+                 Then
+                    AddToMatchCollection c, h, "Name Match"
+                    ret = ret + 1
+                 End If
+            End If
+        Next
+        pb.value = pb.value + 1
+        DoEvents
+    Next
+    
+    pb.value = 0
+    NameMatch = ret
+    
+End Function
+
+Function CallPushMatch() As Long
+
+    Dim ret As Long
     pb.value = 0
     Label1 = "Call/Push Matching"
     
@@ -816,6 +929,7 @@ Sub CallPushMatch()
                     If isWithin(60, c.Length, h.Length, 80) Then     'and length is close
                         If isWithin(4, c.Jumps, h.Jumps) Then    'and num jmps is close
                            AddToMatchCollection c, h, "Call/Push Match"
+                           ret = ret + 1
                         End If
                     End If
                  End If
@@ -826,11 +940,13 @@ Sub CallPushMatch()
     Next
     
     pb.value = 0
+    CallPushMatch = ret
     
-End Sub
+End Function
 
-Sub EspMatch()
+Function EspMatch() As Long
 
+      Dim ret As Long
       pb.value = 0
       Label1 = "ESP Matching"
       
@@ -840,6 +956,7 @@ Sub EspMatch()
                      If isWithin(80, c.Length, h.Length, 80) Then
                         If c.esp <> 0 And c.esp = h.esp And isWithin(40, c.Length, h.Length) Then
                             AddToMatchCollection c, h, "ESP Match"
+                            ret = ret + 1
                         End If
                      End If
                 End If
@@ -849,13 +966,15 @@ Sub EspMatch()
       Next
       
       pb.value = 0
+      EspMatch = ret
       
-End Sub
+End Function
 
 
-Sub APIMatch()
+Function APIMatch() As Long
     Dim i, j, t
     
+    Dim ret As Long
     pb.value = 0
     Label1 = "API Matching"
     
@@ -875,6 +994,7 @@ Sub APIMatch()
                         Next
                         If j = h.fxCalls.Count Then
                             AddToMatchCollection c, h, "API Profile Match"
+                            ret = ret + 1
                         End If
                     'End If
                 End If
@@ -886,13 +1006,15 @@ Sub APIMatch()
     Next
     
     pb.value = 0
+    APIMatch = ret
     
-End Sub
+End Function
 
 
-Sub APIMatch2()
+Function APIMatch2() As Long
     Dim i, j, t, k
     
+    Dim ret As Long
     pb.value = 0
     Label1 = "API2 Matching"
     
@@ -909,6 +1031,7 @@ Sub APIMatch2()
                         Next
                         If isWithin(4, j, h.fxCalls.Count, 3) Then
                             AddToMatchCollection c, h, "API Profile Match 2"
+                            ret = ret + 1
                         End If
                 End If
             End If
@@ -919,12 +1042,14 @@ Sub APIMatch2()
     Next
     
     pb.value = 0
+    APIMatch2 = ret
     
-End Sub
+End Function
 
-Sub ConstMatch()
+Function ConstMatch() As Long
     Dim x, j
     
+      Dim ret As Long
       pb.value = 0
       Label1 = "Const Matching"
       
@@ -940,6 +1065,7 @@ Sub ConstMatch()
                                 
                                 If isWithin(3, c.Constants.Count, j, 2) Then
                                     AddToMatchCollection c, h, "Const Match"
+                                    ret = ret + 1
                                 End If
                                 
                      End If
@@ -950,8 +1076,9 @@ Sub ConstMatch()
       Next
       
       pb.value = 0
+      ConstMatch = ret
       
-End Sub
+End Function
 
 Sub RunMatchSubs()
 
@@ -1101,28 +1228,49 @@ Private Sub Command2_Click()
     
     ResetPB lv1.ListItems.Count, "Comparing..."
     
-    ExactCrcMatch
+    Dim matches As Long
+    Dim stats() As String
+    
+    matches = ExactCrcMatch()
+    push stats(), "ExactCrc Matches: " & matches
+     
+    matches = NameMatch()
+    push stats(), "Name Matches: " & matches
     
     If chkExternalMatchs.value = 1 Then
         If Not LoadScript() Then Exit Sub
         RunMatchSubs
     Else
-        APIMatch
-        EspMatch
-        CallPushMatch
-        APIMatch2
-        ConstMatch
+        matches = APIMatch()
+        push stats(), "API Matches: " & matches
+         
+    
+        matches = EspMatch()
+        push stats(), "ESP Matches: " & matches
+         
+        
+        matches = CallPushMatch()
+        push stats(), "CallPush Matches: " & matches
+         
+        
+        matches = APIMatch2()
+        push stats(), "API2 Matches: " & matches
+        
+        
+        matches = ConstMatch()
+        push stats(), "Const Matches: " & matches
+         
     End If
 
     ResetPB m1.Count, "Adding Matchs"
     AddMatchs
     
     If SigMode Then
-        Label3 = "Current DB Functions (" & lv1.ListItems.Count & " Unmatched)                                       " & _
-                 "Known Signatures "
+        lblDBA = idb_a & " Funcs (" & lv1.ListItems.Count & " Unmatched)"
+        lblDBB = "Known Signatures "
     Else
-        Label3 = "Unmatched Sample A  (" & lv1.ListItems.Count & " Unmatched)                                " & _
-                 "Unmatched sample B (" & lv2.ListItems.Count & " Remaining)"
+        lblDBA = "Unmatched 1: " & idb_a & " (" & lv1.ListItems.Count & " Unmatched) "
+        lblDBB = "Unmatched 2: " & idb_b & " (" & lv2.ListItems.Count & " Remaining)"
     End If
     
     Label1 = Empty
@@ -1134,7 +1282,7 @@ Private Sub Command2_Click()
     push r, "Percent:  " & CInt((lvExact.ListItems.Count / minFunctions) * 100) & "%"
     push r, "Elapsed Time: " & (endTime - startTime) \ 1000 & "secs"
     
-    txtReport = Join(r, vbCrLf)
+    txtReport = Join(r, vbCrLf) & vbCrLf & Join(stats, vbCrLf)
     
     Unload sc(1)
     
@@ -1275,6 +1423,11 @@ Top:
         End Select
     Next
     
+End Sub
+
+Private Sub mnuCopySelection_Click()
+    Clipboard.Clear
+    Clipboard.SetText GetAllElements(lvExact, True)
 End Sub
 
 Private Sub mnuRename_Click(index As Integer)

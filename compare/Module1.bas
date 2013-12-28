@@ -20,7 +20,7 @@ Option Explicit
 
 
 
-Global crc As New clsCRC
+Global crc As New clsCrc
 Global sort As New CAlphaSort
 
 
@@ -106,7 +106,32 @@ Sub ResetPB(newMax, caption)
     End With
 End Sub
 
+Function GetAllElements(lv As ListView, Optional selOnly As Boolean = False) As String
+    Dim ret() As String, i As Integer, tmp As String
+    Dim li As ListItem
 
+    For i = 1 To lv.ColumnHeaders.Count
+        tmp = tmp & lv.ColumnHeaders(i).Text & vbTab
+    Next
+
+    push ret, tmp
+    push ret, String(50, "-")
+
+    For Each li In lv.ListItems
+        tmp = li.Text & vbTab
+        For i = 1 To lv.ColumnHeaders.Count - 1
+            If selOnly Then
+                If li.Selected Then tmp = tmp & li.SubItems(i) & vbTab
+            Else
+                tmp = tmp & li.SubItems(i) & vbTab
+            End If
+        Next
+        push ret, tmp
+    Next
+
+    GetAllElements = Join(ret, vbCrLf)
+
+End Function
 
 Function ReadFile(filename)
   Dim f, temp

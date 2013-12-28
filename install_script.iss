@@ -5,7 +5,7 @@ AppName=IDACompare
 AppVerName=IDACompare v0.1
 DefaultDirName=c:\iDefense\IDACompare\
 DefaultGroupName=IDACompare
-OutputBaseFilename=IDACompare
+OutputBaseFilename=IDACompare_Setup
 OutputDir=./
 
 [Files]
