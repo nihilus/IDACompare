@@ -44,7 +44,7 @@ Public esp As Long
 Public MatchMethod As String
 Public fxCalls As New Collection
 Public Constants As New Collection
-
+Public Standardized As String
 
 Function StandardizeAsm(ByVal asm As String) As String
     
@@ -94,9 +94,12 @@ Function StandardizeAsm(ByVal asm As String) As String
     Next
         
     Standardize tmp
-    'tmp = sort.AlphaSort(tmp)
-    StandardizeAsm = crc(Join(tmp, vbCrLf))
-    mCRC = StandardizeAsm
+    'tmp = sort.AlphaSort(tmp) 'this would wack natural ordering
+    
+    Standardized = Join(tmp, vbCrLf)
+    Standardized = Replace(Standardized, vbCrLf & vbCrLf, vbCrLf) 'strip empty lines (where labels were)
+    mCRC = crc(Standardized)
+    StandardizeAsm = mCRC
      
 End Function
 
@@ -113,23 +116,28 @@ Private Sub Standardize(tmp() As String, Optional stdJmps As Boolean = True, Opt
     Dim i As Long, x, cmd
     
     For i = 0 To UBound(tmp)
-        tmp(i) = Replace(tmp(i), vbTab, " ")
-        tmp(i) = Replace(tmp(i), "  ", " ")
-        If Len(tmp(i)) > 0 Then
-            cmd = Split(tmp(i), " ")
-            
-            If stdJmps Then
-                If VBA.left(cmd(0), 1) = "j" And cmd(0) <> "jmp" Then
-                    cmd(0) = "jxx" 'standardize all conditional jumps
+        If right(tmp(i), 1) = ":" Then
+            'its a label strip it
+            tmp(i) = Empty
+        Else
+            tmp(i) = Replace(tmp(i), vbTab, " ")
+            tmp(i) = Replace(tmp(i), "  ", " ")
+            If Len(tmp(i)) > 0 Then
+                cmd = Split(tmp(i), " ")
+                
+                If stdJmps Then
+                    If VBA.left(cmd(0), 1) = "j" And cmd(0) <> "jmp" Then
+                        cmd(0) = "jxx" 'standardize all conditional jumps
+                    End If
+                    If Not stripArgs Then tmp(i) = Join(cmd, " ")
                 End If
-                If Not stripArgs Then tmp(i) = Join(cmd, " ")
+                
+                If stripArgs Then tmp(i) = cmd(0)
+                
+                x = InStr(tmp(i), ";")
+                If x > 0 Then tmp(i) = Mid(tmp(i), 1, x - 1)
+                tmp(i) = Trim(tmp(i))
             End If
-            
-            If stripArgs Then tmp(i) = cmd(0)
-            
-            x = InStr(tmp(i), ";")
-            If x > 0 Then tmp(i) = Mid(tmp(i), 1, x - 1)
-            tmp(i) = Trim(tmp(i))
         End If
     Next
     

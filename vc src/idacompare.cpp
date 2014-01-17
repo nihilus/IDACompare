@@ -6,6 +6,14 @@
 'Author: David Zimmer <dzzie@yahoo.com> - Copyright 2004
 'Site:   http://sandsprite.com
 '
+
+NOTE: to build this project it is assumed you have an envirnoment variable 
+named IDASDK set to point to the base SDK directory. this env var is used in
+the C/C++ property tab, Preprocessor catagory, Additional include directories
+texbox so that this project can be built without having to be in a specific path
+Also used in the Linker - additional include directories.
+
+
 'License:
 '
 '         This program is free software; you can redistribute it and/or modify it
@@ -38,7 +46,7 @@
 #include <dbg.hpp>
 #include <area.hpp>
 
-
+#undef strcpy
 
 IDispatch        *IDisp;
 
@@ -192,6 +200,8 @@ char __stdcall OriginalByte(int offset){ return get_original_byte(offset); }
 
 void __stdcall SetComment(int offset, char* comm){set_cmt(offset,comm,false);}
 
+/*  old defs reworked..
+
 void __stdcall GetComment(int offset, char* buf){ 
 	char* tmp = get_cmt(offset,false);
 	if(tmp){
@@ -199,11 +209,7 @@ void __stdcall GetComment(int offset, char* buf){
 		qstrncpy(buf,tmp, 800);
 	}
  
-}
-
-int __stdcall ProcessState(void){ return get_process_state(); }
-
-int __stdcall FilePath(char *buf){ 
+ int __stdcall FilePath(char *buf){ 
 	int retlen=0;
 	char *str;
 
@@ -221,6 +227,24 @@ int __stdcall RootFileName(char *buf){
 	return strlen(buf);
 }
 
+}*/
+
+ int __stdcall GetComment(int offset, char* buf){ 
+	unsigned int sz = get_cmt(offset,false,buf,512);	
+	if(sz == -1) sz = get_cmt(offset,true,buf,512);
+	return sz;
+}
+
+int __stdcall FilePath(char *buf){ 
+	return get_input_file_path(buf,255);
+}
+
+int __stdcall RootFileName(char *buf){ 
+	return get_root_filename(buf,255);	
+}
+
+
+int __stdcall ProcessState(void){ return get_process_state(); }
 void __stdcall HideEA(int offset){	set_visible_item(offset, false); }
 void __stdcall ShowEA(int offset){	set_visible_item(offset, true); }
 
@@ -240,10 +264,22 @@ int __stdcall PrevAddr(int offset){
 //not working?
 //void __stdcall AnalyzeArea(int startat, int endat){ analyse_area(startat, endat);}
 
-
-//not workign to get labels
+//now working w/ labels
 void __stdcall GetName(int offset, char* buf, int bufsize){
+
 	get_true_name( BADADDR, offset, buf, bufsize );
+
+	if(strlen(buf) == 0){
+		func_t* f = get_func(offset);
+		for(int i=0; i < f->llabelqty; i++){
+			if( f->llabels[i].ea == offset ){
+				int sz = strlen(f->llabels[i].name);
+				if(sz < bufsize) strcpy(buf,f->llabels[i].name);
+				return;
+			}
+		}
+	}
+
 }
 
 //not workign to make code and analyze

@@ -2,16 +2,15 @@
 
 [Setup]
 AppName=IDACompare
-AppVerName=IDACompare v0.1
+AppVerName=IDACompare v0.3
 DefaultDirName=c:\iDefense\IDACompare\
 DefaultGroupName=IDACompare
 OutputBaseFilename=IDACompare_Setup
 OutputDir=./
 
 [Files]
-Source: ./\ida4.7\IDA_Compare.plw; DestDir: {app}\ida4.7
-Source: ./\ida4.8\IDA_Compare.plw; DestDir: {app}\ida4.8
-Source: ./\ida4.9\IDA_Compare.plw; DestDir: {app}\ida4.9
+Source: ./IDA_Compare.plw; DestDir: {app}
+Source: ./install_plw.bat; DestDir: {app}
 Source: ./\vb src\Module1.bas; DestDir: {app}\vb src
 Source: ./\vb src\frmPluginSample.frm; DestDir: {app}\vb src
 Source: ./\vb src\CPlugin.cls; DestDir: {app}\vb src
@@ -20,9 +19,8 @@ Source: ./\vb src\clsCmnDlg.cls; DestDir: {app}\vb src
 Source: ./\vb src\Ida_Compare.vbw; DestDir: {app}\vb src
 Source: ./\vc src\idacompare.cpp; DestDir: {app}\vc src
 Source: ./\vc src\idacompare.def; DestDir: {app}\vc src
-Source: ./\vc src\idacompare.dsp; DestDir: {app}\vc src
-Source: ./\vc src\idacompare.dsw; DestDir: {app}\vc src
-Source: ./\vc src\build_notes.txt; DestDir: {app}\vc src
+Source: ./\vc src\idacompare.vcproj; DestDir: {app}\vc src
+Source: ./\vc src\idacompare.sln; DestDir: {app}\vc src
 Source: ./\blank.mdb; DestDir: {app}
 Source: ./\compare.vbs; DestDir: {app}
 Source: ./\ida_compare.exe; DestDir: {app}; Flags: ignoreversion
@@ -49,8 +47,6 @@ Source: ./dependancy\msscript.ocx; DestDir: {win}; Flags: uninsneveruninstall re
 Name: {app}\vb src
 Name: {app}\vc src
 Name: {app}\compare
-Name: {app}\ida4.7
-Name: {app}\ida4.8
 
 [Run]
 Filename: {app}\Readme.chm; WorkingDir: {app}; StatusMsg: View ReadMe File; Flags: shellexec postinstall
@@ -59,11 +55,11 @@ Filename: {app}\Readme.chm; WorkingDir: {app}; StatusMsg: View ReadMe File; Flag
 Name: {group}\IDACompare.exe; Filename: {app}\ida_compare.exe; WorkingDir: {app}
 Name: {group}\ReadMe.chm; Filename: {app}\Readme.chm
 Name: {group}\Example DB; Filename: {app}\ida_compare.exe; Parameters: mydoom_example.mdb; WorkingDir: {app}; IconFilename: {app}\mydoom_example.mdb
-Name: {group}\Source\Plugin.dsw; Filename: {app}\vc src\idacompare.dsw
+Name: {group}\Source\Plugin..vcproj; Filename: {app}\vc src\idacompare.vcproj
 Name: {group}\Source\Compare.vbp; Filename: {app}\compare\Project1.vbp
 Name: {group}\Source\PluginUI.vbp; Filename: {app}\vb src\Ida_Compare.vbp
 Name: {group}\Uninstall; Filename: unins000.exe
-Name: {group}\labs.iDefense.com Website; Filename: {app}\iDefense Labs.url; WorkingDir: {app}
+;Name: {group}\labs.iDefense.com Website; Filename: {app}\iDefense Labs.url; WorkingDir: {app}
 
 [CustomMessages]
 NameAndVersion=%1 version %2

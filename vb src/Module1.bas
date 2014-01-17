@@ -131,10 +131,10 @@ Function GetFName(offset As Long) As String
     
 End Function
 
-Function GetHex(X As Byte) As String
+Function GetHex(x As Byte) As String
     Dim Y As String
-    Y = Hex(X)
-    If X < &H10 Then Y = "0" & Y
+    Y = Hex(x)
+    If x < &H10 Then Y = "0" & Y
     GetHex = Y
 End Function
 
@@ -152,51 +152,77 @@ Function GetAsmCode(offset) As String
     
 End Function
 
+'Function GetAsmRange(start As Long, leng As Long) As String
+'    Dim x As String, tmp As String, i As Long, n As String
+'
+'    For i = 0 To leng - 1
+'
+'        tmp = GetAsmCode(start + i)
+'        If Len(tmp) > 0 Then x = x & tmp & vbCrLf
+'
+'    Next
+'
+'    GetAsmRange = x
+'
+'End Function
+
 Function GetAsmRange(start As Long, leng As Long) As String
-    Dim X As String, tmp As String, i As Long, n As String
+    Dim x As String, tmp As String, i As Long, n As String
     
     For i = 0 To leng - 1
-        
         tmp = GetAsmCode(start + i)
-        If Len(tmp) > 0 Then X = X & tmp & vbCrLf
-                
+        If Len(tmp) > 0 Then
+            
+            If i <> 0 Then 'add in local labels...but not the function name (offset 0)
+                n = GetName(start + i)
+                If Len(n) > 0 Then x = x & n & ":" & vbCrLf
+            End If
+            
+            x = x & tmp & vbCrLf
+            
+        End If
     Next
     
-    GetAsmRange = X
+    GetAsmRange = x
     
 End Function
 
 Function HexDumpBytes(start As Long, leng As Long) As String
-    Dim buf() As Byte, i As Integer, X As String
+    Dim buf() As Byte, i As Integer, x As String
     
     ReDim buf(1 To leng)
     GetBytes start, buf(1), leng
     
     For i = 1 To leng
-        X = X & GetHex(buf(i)) & " "
+        x = x & GetHex(buf(i)) & " "
     Next
     
-    HexDumpBytes = X
+    HexDumpBytes = x
     
 End Function
 
 Function GetName(offset) As String
-    Dim buf As String, X
+    Dim buf As String, x
     buf = String(257, Chr(0))
     
     aGetName CLng(offset), buf, 257
     
-    X = InStr(buf, Chr(0))
-    If X > 1 Then buf = Mid(buf, 1, X)
+    x = InStr(buf, Chr(0))
+    If x = 1 Then
+        buf = ""
+    ElseIf x > 2 Then
+        buf = Mid(buf, 1, x - 1)
+    End If
     
-    GetName = X
+    GetName = buf
 
 End Function
 
+
 Sub push(ary, value) 'this modifies parent ary object
     On Error GoTo init
-    Dim X As Long
-    X = UBound(ary) '<-throws Error If Not initalized
+    Dim x As Long
+    x = UBound(ary) '<-throws Error If Not initalized
     ReDim Preserve ary(UBound(ary) + 1)
     ary(UBound(ary)) = value
     Exit Sub

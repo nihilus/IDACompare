@@ -1,16 +1,141 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
    ClientHeight    =   8625
    ClientLeft      =   60
-   ClientTop       =   345
+   ClientTop       =   630
    ClientWidth     =   9990
    LinkTopic       =   "Form1"
    ScaleHeight     =   8625
    ScaleWidth      =   9990
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Frame frmConfigMatches 
+      Caption         =   " Configure Match Engine "
+      Height          =   3465
+      Left            =   1710
+      TabIndex        =   20
+      Top             =   1290
+      Width           =   5715
+      Begin VB.CheckBox chkConstMatch 
+         Caption         =   "ConstMatch"
+         Height          =   315
+         Left            =   690
+         TabIndex        =   31
+         Top             =   3000
+         Value           =   1  'Checked
+         Width           =   2295
+      End
+      Begin VB.CheckBox chkApiMatch2 
+         Caption         =   "ApiMatch2"
+         Height          =   315
+         Left            =   690
+         TabIndex        =   28
+         Top             =   2640
+         Value           =   1  'Checked
+         Width           =   2295
+      End
+      Begin VB.CheckBox chkExactCRC 
+         Caption         =   "ExactCRC"
+         Height          =   315
+         Left            =   660
+         TabIndex        =   27
+         Top             =   360
+         Value           =   1  'Checked
+         Width           =   1185
+      End
+      Begin VB.CheckBox chkCallPushMatch 
+         Caption         =   "CallPush Match"
+         Height          =   315
+         Left            =   690
+         TabIndex        =   26
+         Top             =   2280
+         Value           =   1  'Checked
+         Width           =   2295
+      End
+      Begin VB.CheckBox chkEspMatch 
+         Caption         =   "EspMatch"
+         Height          =   315
+         Left            =   690
+         TabIndex        =   25
+         Top             =   1890
+         Value           =   1  'Checked
+         Width           =   2295
+      End
+      Begin VB.CheckBox chkApiMatch 
+         Caption         =   "ApiMatch"
+         Height          =   315
+         Left            =   690
+         TabIndex        =   24
+         Top             =   1500
+         Value           =   1  'Checked
+         Width           =   2295
+      End
+      Begin VB.CheckBox chkNameMatch 
+         Caption         =   "Name Match"
+         Height          =   285
+         Left            =   2130
+         TabIndex        =   23
+         Top             =   390
+         Value           =   1  'Checked
+         Width           =   1245
+      End
+      Begin VB.OptionButton optExternalEngine 
+         Caption         =   "External match script"
+         Height          =   345
+         Left            =   3540
+         TabIndex        =   22
+         Top             =   1080
+         Width           =   1815
+      End
+      Begin VB.OptionButton optInternalMatchEngine 
+         Caption         =   "Use Internal Match Engine"
+         Height          =   345
+         Left            =   210
+         TabIndex        =   21
+         Top             =   1080
+         Value           =   -1  'True
+         Width           =   2265
+      End
+      Begin VB.Label lblExternal 
+         BackColor       =   &H8000000A&
+         Caption         =   "?"
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   -1  'True
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00FF0000&
+         Height          =   195
+         Left            =   5430
+         TabIndex        =   30
+         Top             =   1140
+         Width           =   195
+      End
+      Begin VB.Label lblCloseConfig 
+         BackColor       =   &H00FFFFFF&
+         Caption         =   " X"
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   15.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   5040
+         TabIndex        =   29
+         Top             =   60
+         Width           =   615
+      End
+   End
    Begin VB.Frame Frame1 
       Height          =   4605
       Left            =   0
@@ -21,7 +146,7 @@ Begin VB.Form Form1
          Caption         =   "P"
          Height          =   255
          Left            =   4950
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   1620
          Width           =   315
       End
@@ -39,7 +164,7 @@ Begin VB.Form Form1
          Height          =   195
          Index           =   1
          Left            =   4590
-         TabIndex        =   19
+         TabIndex        =   17
          Top             =   60
          Width           =   375
       End
@@ -58,7 +183,7 @@ Begin VB.Form Form1
          Height          =   195
          Index           =   0
          Left            =   4950
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   60
          Width           =   375
       End
@@ -76,7 +201,7 @@ Begin VB.Form Form1
          Left            =   60
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   240
          Width           =   9675
       End
@@ -84,7 +209,7 @@ Begin VB.Form Form1
          Caption         =   "Load && Compare"
          Height          =   375
          Left            =   8130
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   4110
          Width           =   1515
       End
@@ -92,7 +217,7 @@ Begin VB.Form Form1
          Caption         =   "Manual Match"
          Height          =   255
          Left            =   6390
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   1620
          Width           =   1395
       End
@@ -101,7 +226,7 @@ Begin VB.Form Form1
          Enabled         =   0   'False
          Height          =   255
          Left            =   7830
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1620
          Width           =   1035
       End
@@ -109,22 +234,14 @@ Begin VB.Form Form1
          Caption         =   "Find"
          Height          =   255
          Left            =   5310
-         TabIndex        =   7
-         Top             =   1620
-         Width           =   975
-      End
-      Begin VB.CheckBox chkExternalMatchs 
-         Caption         =   "Check1"
-         Height          =   255
-         Left            =   3270
          TabIndex        =   6
          Top             =   1620
-         Width           =   255
+         Width           =   975
       End
       Begin MSComctlLib.ProgressBar pb 
          Height          =   315
          Left            =   2250
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   4170
          Width           =   5715
          _ExtentX        =   10081
@@ -135,7 +252,7 @@ Begin VB.Form Form1
       Begin MSComctlLib.ListView lvExact 
          Height          =   2145
          Left            =   30
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   1920
          Width           =   9645
          _ExtentX        =   17013
@@ -186,38 +303,9 @@ Begin VB.Form Form1
             Object.Width           =   6174
          EndProperty
       End
-      Begin VB.Label Label1 
-         Height          =   315
-         Left            =   30
-         TabIndex        =   17
-         Top             =   4170
-         Width           =   2295
-      End
-      Begin VB.Label Label2 
-         Caption         =   "Matched Functions"
-         Height          =   195
-         Index           =   0
-         Left            =   90
-         TabIndex        =   16
-         Top             =   1680
-         Width           =   1575
-      End
-      Begin VB.Label lblTransform 
-         Alignment       =   2  'Center
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   1  'Fixed Single
-         Caption         =   "Rename Tools"
-         ForeColor       =   &H80000008&
-         Height          =   255
-         Left            =   1710
-         TabIndex        =   15
-         Top             =   1620
-         Width           =   1395
-      End
-      Begin VB.Label lblExternal 
+      Begin VB.Label Label3 
          BackColor       =   &H8000000A&
-         Caption         =   "External Matchs"
+         Caption         =   "Match config"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -230,7 +318,36 @@ Begin VB.Form Form1
          ForeColor       =   &H00FF0000&
          Height          =   195
          Left            =   3570
+         TabIndex        =   32
+         Top             =   1650
+         Width           =   1185
+      End
+      Begin VB.Label Label1 
+         Height          =   315
+         Left            =   30
+         TabIndex        =   15
+         Top             =   4170
+         Width           =   2295
+      End
+      Begin VB.Label Label2 
+         Caption         =   "Matched Functions"
+         Height          =   195
+         Index           =   0
+         Left            =   90
          TabIndex        =   14
+         Top             =   1680
+         Width           =   1575
+      End
+      Begin VB.Label lblTransform 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Rename Tools"
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Left            =   1710
+         TabIndex        =   13
          Top             =   1620
          Width           =   1395
       End
@@ -380,7 +497,7 @@ Begin VB.Form Form1
       Caption         =   "Unmatched sample 2"
       Height          =   285
       Left            =   5010
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   30
       Width           =   4935
    End
@@ -394,7 +511,6 @@ Begin VB.Form Form1
    End
    Begin VB.Menu mnuPopup 
       Caption         =   "mnuPopup"
-      Visible         =   0   'False
       Begin VB.Menu mnuCheckAll 
          Caption         =   "Select All"
          Index           =   0
@@ -425,7 +541,6 @@ Begin VB.Form Form1
    End
    Begin VB.Menu mnuPopupRename 
       Caption         =   "mnuPopupRename"
-      Visible         =   0   'False
       Begin VB.Menu mnuRename 
          Caption         =   "Sequentially Rename Matchs"
          Index           =   0
@@ -634,6 +749,14 @@ Private Sub Form_Resize()
     
 End Sub
 
+Private Sub Label3_Click()
+    frmConfigMatches.Visible = True
+End Sub
+
+Private Sub lblCloseConfig_Click()
+    frmConfigMatches.Visible = False
+End Sub
+
 Private Sub lblExternal_Click()
 
     MsgBox "This will use the match functions in compare.vbs to " & vbCrLf & _
@@ -736,11 +859,40 @@ Private Sub cmdManualMatch_Click()
 
 End Sub
 
+Sub LoadChkSettings(Optional load As Boolean = True)
+    
+    Dim cc As CheckBox
+    Dim c As Control
+    Dim r As Long
+    
+    On Error Resume Next
+    For Each c In Me.Controls
+        If TypeName(c) = "CheckBox" Then
+            Set cc = c
+            If load Then
+                r = GetSetting("IDACompare", "settings", cc.Name, 1)
+                cc.value = r
+            Else
+                Call SaveSetting("IDACompare", "settings", cc.Name, cc.value)
+            End If
+        End If
+    Next
+        
+End Sub
+
 'if we have a function calling out to a matched function
 'and it was the only way there..then if we only had one
 'other unmatched on calling to it them we could relate them.
 
 Private Sub Form_Load()
+    
+    mnuPopup.Visible = False
+    mnuPopupRename.Visible = False
+    frmConfigMatches.Visible = False
+    
+    LoadChkSettings
+    optInternalMatchEngine.value = GetSetting("IDACompare", "settings", "optInternalMatchEngine", True)
+    If Not optInternalMatchEngine.value Then optExternalEngine.value = True
     
     If Len(Command) > 0 Then
         currentMDB = Replace(Command, """", Empty)
@@ -1169,7 +1321,7 @@ End Sub
 Function LoadScript() As Boolean
     On Error GoTo hell
     If sc.Count = 2 Then Unload sc(1)
-    Load sc(1)
+    load sc(1)
     sc(1).AddCode ReadFile(App.path & "\compare.vbs")
     LoadScript = True
     Exit Function
@@ -1193,7 +1345,7 @@ Private Sub Command2_Click()
     GlobalResets
     startTime = GetTickCount
     
-    If chkExternalMatchs.value = 1 Then
+    If optExternalEngine.value Then
         If Not FileExists(App.path & "\compare.vbs") Then
             MsgBox "Could not locate compare.vbs for external match checks!", vbInformation
             Exit Sub
@@ -1231,35 +1383,45 @@ Private Sub Command2_Click()
     Dim matches As Long
     Dim stats() As String
     
-    matches = ExactCrcMatch()
-    push stats(), "ExactCrc Matches: " & matches
-     
-    matches = NameMatch()
-    push stats(), "Name Matches: " & matches
+    If chkExactCRC.value = 1 Then
+        matches = ExactCrcMatch()
+        push stats(), "ExactCrc Matches: " & matches
+    End If
     
-    If chkExternalMatchs.value = 1 Then
+    If chkNameMatch.value = 1 Then
+        matches = NameMatch()
+        push stats(), "Name Matches: " & matches
+    End If
+    
+    If optExternalEngine.value Then
         If Not LoadScript() Then Exit Sub
         RunMatchSubs
     Else
-        matches = APIMatch()
-        push stats(), "API Matches: " & matches
-         
-    
-        matches = EspMatch()
-        push stats(), "ESP Matches: " & matches
-         
+        If chkApiMatch.value = 1 Then
+            matches = APIMatch()
+            push stats(), "API Matches: " & matches
+        End If
         
-        matches = CallPushMatch()
-        push stats(), "CallPush Matches: " & matches
-         
+        If chkEspMatch.value = 1 Then
+            matches = EspMatch()
+            push stats(), "ESP Matches: " & matches
+        End If
         
-        matches = APIMatch2()
-        push stats(), "API2 Matches: " & matches
+        If chkCallPushMatch.value = 1 Then
+            matches = CallPushMatch()
+            push stats(), "CallPush Matches: " & matches
+        End If
         
+        If chkApiMatch2.value = 1 Then
+            matches = APIMatch2()
+            push stats(), "API2 Matches: " & matches
+        End If
         
-        matches = ConstMatch()
-        push stats(), "Const Matches: " & matches
-         
+        If chkConstMatch.value = 1 Then
+            matches = ConstMatch()
+            push stats(), "Const Matches: " & matches
+        End If
+        
     End If
 
     ResetPB m1.Count, "Adding Matchs"
@@ -1304,6 +1466,8 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     cn.Close
+    LoadChkSettings False
+    SaveSetting "IDACompare", "settings", "optInternalMatchEngine", optInternalMatchEngine.value
     Set cmndlg1 = Nothing
 End Sub
 
@@ -1422,6 +1586,10 @@ Top:
                     End If
         End Select
     Next
+    
+    If index = 3 Or index = 4 Then 'removes
+        MsgBox lvExact.ListItems.Count & " matches left", vbInformation
+    End If
     
 End Sub
 
