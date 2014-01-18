@@ -23,6 +23,107 @@ Option Explicit
 Global crc As New clsCrc
 Global sort As New CAlphaSort
 
+Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
+    
+    On Error Resume Next
+    
+    Dim tmp() As String
+    Dim x, i As Long
+    Const indentLen = 2
+    
+    tmp() = Split(asm, vbCrLf)
+    
+    'first we add line breaks for comments and indents for code..
+    For i = 0 To UBound(tmp)
+        x = Trim(tmp(i))
+        If right(x, 1) = ":" Then 'label
+            tmp(i) = vbCrLf & x
+        Else
+            tmp(i) = Space(indentLen) & x
+        End If
+    Next
+    
+    tb.Text = Join(tmp, vbCrLf) 'save to textbox..
+    
+    rtf.SetWindowUpdate tb
+    
+    Dim curPos As Long
+    Dim a As Long
+    
+   'now we highlight
+    For i = 0 To UBound(tmp)
+        x = Trim(tmp(i))
+        
+        If left(x, 1) = "j" Then 'isjump
+            tb.SelStart = curPos
+            tb.SelLength = Len(tmp(i))
+            tb.SelColor = vbRed
+        ElseIf left(x, 4) = "call" Then 'iscall
+            tb.SelStart = curPos
+            tb.SelLength = Len(tmp(i))
+            tb.SelColor = vbBlue
+        End If
+        
+        a = InStr(tmp(i), ";")
+        If a > 0 Then 'comment
+            tb.SelStart = curPos + a
+            tb.SelLength = Len(tmp(i)) - a
+            tb.SelColor = &H8000&
+        End If
+        
+        If right(x, 1) = ":" Then 'is label
+            tb.SelStart = curPos
+            tb.SelLength = Len(tmp(i))
+            tb.SelColor = &H404000
+            tb.SelBold = True
+        End If
+        
+        curPos = curPos + Len(tmp(i)) + 2 'for crlf
+    Next
+            
+            
+    'now we search for and highlight all constants from the function..
+    Dim k
+    Dim eol As Long
+    Dim nextSpace As Long
+    
+    For Each k In c.Constants
+        a = 0
+        Do
+            a = tb.Find(k, a)
+            If a > 0 Then
+                eol = InStr(a, tb.Text, vbCrLf)
+                nextSpace = InStr(a + 1, tb.Text, " ")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                tb.SelStart = a
+                tb.SelLength = eol - a
+                tb.SelBold = True
+                a = a + tb.SelLength
+            End If
+        Loop While a > 0
+    Next
+          
+'    For Each k In c.labels 'they are already red we dont need them bold to, to much processing
+'        a = 0
+'        Do
+'            a = tb.Find(k, a)
+'            If a > 0 Then
+'                eol = InStr(a, tb.Text, vbCrLf)
+'                nextSpace = InStr(a + 1, tb.Text, " ")
+'                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+'                tb.SelStart = a
+'                tb.SelLength = eol - a
+'                tb.SelBold = True
+'                a = a + tb.SelLength
+'            End If
+'        Loop While a > 0
+'    Next
+    
+    tb.SelStart = 0
+    
+    rtf.SetWindowUpdate tb, False
+    
+End Sub
 
 Sub push(ary, value) 'this modifies parent ary object
     On Error GoTo init
@@ -34,7 +135,28 @@ Sub push(ary, value) 'this modifies parent ary object
 init:     ReDim ary(0): ary(0) = value
 End Sub
  
-
+Sub FormPos(fform As Form, Optional andSize As Boolean = False, Optional save_mode As Boolean = False)
+    
+    On Error Resume Next
+    
+    Dim f, sz, i, ff, def
+    f = Split(",Left,Top,Height,Width", ",")
+    
+    If fform.WindowState = vbMinimized Then Exit Sub
+    If andSize = False Then sz = 2 Else sz = 4
+    
+    For i = 1 To sz
+        If save_mode Then
+            ff = CallByName(fform, f(i), VbGet)
+            SaveSetting App.EXEName, fform.Name & ".FormPos", f(i), ff
+        Else
+            def = CallByName(fform, f(i), VbGet)
+            ff = GetSetting(App.EXEName, fform.Name & ".FormPos", f(i), def)
+            CallByName fform, f(i), VbLet, ff
+        End If
+    Next
+    
+End Sub
 
 Function RandomNum() As Long
     Dim tmp As Long

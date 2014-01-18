@@ -44,6 +44,7 @@ Public esp As Long
 Public MatchMethod As String
 Public fxCalls As New Collection
 Public Constants As New Collection
+Public labels As New Collection
 Public Standardized As String
 
 Function StandardizeAsm(ByVal asm As String) As String
@@ -62,8 +63,10 @@ Function StandardizeAsm(ByVal asm As String) As String
     'hit counts for: calls, pushs, jxxs, esp size, and apis called
     For j = 0 To UBound(tmp)
             
+            'If InStr(tmp(j), "28955B88h") > 0 Then Stop
+            
             Select Case left(tmp(j), 3)
-                Case "cmp", "and", "xor", "pus": CheckConstant tmp(j)
+                Case "cmp", "and", "xor", "pus", "mov", "lea", "sub": CheckConstant tmp(j)
             End Select
             
             If InStr(tmp(j), "call") > 0 Then
@@ -90,6 +93,8 @@ Function StandardizeAsm(ByVal asm As String) As String
                 Else
                     esp = CLng(k)
                 End If
+            ElseIf right(Trim(tmp(j)), 1) = ":" Then
+                labels.Add Mid(Trim(tmp(j)), 1, Len(Trim(tmp(j))) - 1)
             End If
     Next
         
@@ -146,6 +151,17 @@ End Sub
 Private Sub CheckConstant(ByVal asm)
     Dim tmp() As String
     Dim i As Long
+    Dim a As Long
+    
+    a = InStr(asm, ";")
+    If a > 0 Then asm = Mid(asm, 1, a)
+    
+    If right(asm, 1) = "]" Then
+        asm = Mid(asm, 1, Len(asm) - 1)
+        asm = Replace(asm, "+", " ")
+        asm = Replace(asm, "-", " ")
+        asm = Replace(asm, "*", " ")
+    End If
     
     asm = Replace(asm, vbTab, " ")
     
@@ -156,11 +172,11 @@ Private Sub CheckConstant(ByVal asm)
     asm = Trim(asm)
     tmp = Split(asm, " ")
     
-    If InStr(asm, ",") Then i = 2 Else i = 1
-    If UBound(tmp) < i Then Exit Sub
-    
-    tmp(i) = Trim(tmp(i))
-    If right(tmp(i), 1) = "h" Then
+    'If InStr(asm, ",") Then i = 2 Else i = 1
+    'If UBound(tmp) < i Then Exit Sub
+   
+    tmp(i) = Trim(tmp(UBound(tmp)))
+    If right(tmp(i), 1) = "h" And Len(tmp(i)) > 3 Then
         If KeyExistsInCollection(Constants, "key:" & tmp(i)) Then
             Constants.Add tmp(i)
         Else

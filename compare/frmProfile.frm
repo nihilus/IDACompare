@@ -2,15 +2,15 @@ VERSION 5.00
 Begin VB.Form frmProfile 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Function  Profile Details"
-   ClientHeight    =   4470
+   ClientHeight    =   7425
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   7800
+   ClientWidth     =   10545
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   4470
-   ScaleWidth      =   7800
+   ScaleHeight     =   7425
+   ScaleWidth      =   10545
    StartUpPosition =   2  'CenterScreen
    Visible         =   0   'False
    Begin VB.CommandButton Command1 
@@ -27,9 +27,9 @@ Begin VB.Form frmProfile
       EndProperty
       Height          =   195
       Index           =   0
-      Left            =   3900
+      Left            =   5190
       TabIndex        =   3
-      Top             =   4260
+      Top             =   7170
       Width           =   375
    End
    Begin VB.CommandButton Command1 
@@ -45,28 +45,46 @@ Begin VB.Form frmProfile
       EndProperty
       Height          =   195
       Index           =   1
-      Left            =   3540
+      Left            =   4830
       TabIndex        =   2
-      Top             =   4260
+      Top             =   7170
       Width           =   375
    End
    Begin VB.TextBox txtDetails2 
-      Height          =   4155
-      Left            =   3960
+      BeginProperty Font 
+         Name            =   "Courier"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   7065
+      Left            =   5280
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   1
-      Top             =   60
-      Width           =   3735
+      Top             =   30
+      Width           =   5085
    End
    Begin VB.TextBox txtDetails1 
-      Height          =   4155
+      BeginProperty Font 
+         Name            =   "Courier"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   7035
       Left            =   120
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   0
       Top             =   60
-      Width           =   3735
+      Width           =   5085
    End
 End
 Attribute VB_Name = "frmProfile"
@@ -93,13 +111,13 @@ Option Explicit
 '         this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 '         Place, Suite 330, Boston, MA 02111-1307 USA
 
-Private Declare Sub SetWindowPos Lib "User32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 Private Const HWND_TOPMOST = -1
 
 
 
 Sub SetWindowTopMost(f As Form)
-   SetWindowPos f.hWnd, HWND_TOPMOST, f.left / 15, _
+   SetWindowPos f.hwnd, HWND_TOPMOST, f.left / 15, _
         f.Top / 15, f.Width / 15, _
         f.Height / 15, Empty
 End Sub
@@ -108,8 +126,8 @@ End Sub
 Sub ShowProfile(a As CFunction, Optional b As CFunction = Nothing)
     
     If b Is Nothing Then
-        Me.Width = 3870  'single view mode
-        Me.Height = 4635 'hide dual scroll buttons
+        Me.Width = 5355  'single view mode
+        Me.Height = 7530 'hide dual scroll buttons
     End If
     
     txtDetails1 = BuildReport(a)

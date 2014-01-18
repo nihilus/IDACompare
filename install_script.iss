@@ -42,6 +42,7 @@ Source: ./\signatures.mdb; DestDir: {app}
 Source: ./\iDefense Labs.url; DestDir: {app}
 Source: ./dependancy\mscomctl.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 Source: ./dependancy\msscript.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
+Source: ./dependancy\richtx32.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 
 [Dirs]
 Name: {app}\vb src
