@@ -35,6 +35,7 @@ Source: ./\compare\Module2.bas; DestDir: {app}\compare
 Source: ./\compare\CFunction.cls; DestDir: {app}\compare
 Source: ./\compare\frmProfile.frm; DestDir: {app}\compare
 Source: ./\compare\frmFind.frm; DestDir: {app}\compare
+Source: ./\compare\frmDataViewer.frm; DestDir: {app}\compare
 Source: ./\IdaCompare.dll; DestDir: {app}; Flags: regserver ignoreversion
 Source: ./\mydoom_example.mdb; DestDir: {app}
 Source: ./\Readme.chm; DestDir: {app}
@@ -43,11 +44,19 @@ Source: ./\iDefense Labs.url; DestDir: {app}
 Source: ./dependancy\mscomctl.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 Source: ./dependancy\msscript.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 Source: ./dependancy\richtx32.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
+Source: ./dependancy\vbDevKit.dll; DestDir: {win}; Flags: uninsneveruninstall regserver
+Source: WinMerge_Plugin\README.txt; DestDir: {app}\WinMerge_Plugin\
+Source: WinMerge_Plugin\WinMergeScript.cls; DestDir: {app}\WinMerge_Plugin\
+Source: WinMerge_Plugin\WinMerge_IDACompare.vbp; DestDir: {app}\WinMerge_Plugin\
+Source: WinMerge_Plugin\WinMerge_IDACompare.vbw; DestDir: {app}\WinMerge_Plugin\
+Source: WinMerge_Plugin\wmIDACompare.dll; DestDir: {app}\WinMerge_Plugin\  Flags: regserver
+
 
 [Dirs]
 Name: {app}\vb src
 Name: {app}\vc src
 Name: {app}\compare
+Name: {app}\WinMerge_Plugin
 
 [Run]
 Filename: {app}\Readme.chm; WorkingDir: {app}; StatusMsg: View ReadMe File; Flags: shellexec postinstall

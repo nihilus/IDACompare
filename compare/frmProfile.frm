@@ -122,6 +122,12 @@ Sub SetWindowTopMost(f As Form)
         f.Height / 15, Empty
 End Sub
 
+Sub ShowData(data As String)
+        Me.Width = 5355  'single view mode
+        Me.Height = 7530 'hide dual scroll buttons
+        txtDetails1 = data
+        Me.Visible = True
+End Sub
 
 Sub ShowProfile(a As CFunction, Optional b As CFunction = Nothing)
     

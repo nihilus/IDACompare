@@ -1,139 +1,237 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
-   ClientHeight    =   8625
+   ClientHeight    =   9195
    ClientLeft      =   60
    ClientTop       =   630
    ClientWidth     =   9975
+   BeginProperty Font 
+      Name            =   "Courier"
+      Size            =   9.75
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   8625
+   ScaleHeight     =   9195
    ScaleWidth      =   9975
    StartUpPosition =   2  'CenterScreen
    Begin VB.PictureBox frmConfigMatches 
       BackColor       =   &H00404040&
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   3675
-      Left            =   1920
+      Left            =   1260
       ScaleHeight     =   3615
       ScaleWidth      =   5865
-      TabIndex        =   19
-      Top             =   330
+      TabIndex        =   12
+      Top             =   780
       Width           =   5925
       Begin VB.Frame frmConfigMatchesInner 
          Caption         =   " Configure Match Engine "
+         BeginProperty Font 
+            Name            =   "MS Sans Serif"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
          Height          =   3465
          Left            =   60
-         TabIndex        =   20
+         TabIndex        =   13
          Top             =   60
          Width           =   5715
          Begin VB.CheckBox chkConstMatch 
             Caption         =   "ConstMatch"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   29
+            TabIndex        =   22
             Top             =   3000
             Value           =   1  'Checked
             Width           =   2295
          End
          Begin VB.CheckBox chkApiMatch2 
             Caption         =   "ApiMatch2"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   28
+            TabIndex        =   21
             Top             =   2640
             Value           =   1  'Checked
             Width           =   2295
          End
          Begin VB.CheckBox chkExactCRC 
             Caption         =   "ExactCRC"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   27
+            TabIndex        =   20
             Top             =   300
             Value           =   1  'Checked
             Width           =   1185
          End
          Begin VB.CheckBox chkCallPushMatch 
             Caption         =   "CallPush Match"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   26
+            TabIndex        =   19
             Top             =   2280
             Value           =   1  'Checked
             Width           =   2295
          End
          Begin VB.CheckBox chkEspMatch 
             Caption         =   "EspMatch"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   25
+            TabIndex        =   18
             Top             =   1890
             Value           =   1  'Checked
             Width           =   2295
          End
          Begin VB.CheckBox chkApiMatch 
             Caption         =   "ApiMatch"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   315
             Left            =   690
-            TabIndex        =   24
+            TabIndex        =   17
             Top             =   1500
             Value           =   1  'Checked
             Width           =   2295
          End
          Begin VB.CheckBox chkNameMatch 
             Caption         =   "Name Match"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   285
             Left            =   690
-            TabIndex        =   23
+            TabIndex        =   16
             Top             =   690
             Value           =   1  'Checked
             Width           =   1245
          End
          Begin VB.OptionButton optExternalEngine 
             Caption         =   "External match script"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   345
             Left            =   3540
-            TabIndex        =   22
+            TabIndex        =   15
             Top             =   1080
             Width           =   1815
          End
          Begin VB.OptionButton optInternalMatchEngine 
             Caption         =   "Use Internal Match Engine"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
             Height          =   345
             Left            =   210
-            TabIndex        =   21
+            TabIndex        =   14
             Top             =   1080
             Value           =   -1  'True
             Width           =   2265
          End
          Begin VB.Label lblExternalHelp 
             Caption         =   "lblExternalHelp"
-            Height          =   1815
-            Left            =   3150
-            TabIndex        =   34
-            Top             =   1560
-            Width           =   2505
-         End
-         Begin VB.Label lblExternal 
-            BackColor       =   &H8000000A&
-            Caption         =   "?"
             BeginProperty Font 
                Name            =   "MS Sans Serif"
                Size            =   8.25
                Charset         =   0
                Weight          =   400
-               Underline       =   -1  'True
+               Underline       =   0   'False
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            ForeColor       =   &H00FF0000&
-            Height          =   195
-            Left            =   5430
-            TabIndex        =   31
-            Top             =   1140
-            Width           =   195
+            Height          =   1815
+            Left            =   3150
+            TabIndex        =   26
+            Top             =   1560
+            Width           =   2505
          End
          Begin VB.Label lblCloseConfig 
             BackColor       =   &H00FFFFFF&
@@ -149,26 +247,27 @@ Begin VB.Form Form1
             EndProperty
             Height          =   375
             Left            =   5040
-            TabIndex        =   30
+            TabIndex        =   23
             Top             =   60
             Width           =   615
          End
       End
    End
    Begin VB.Frame Frame1 
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   4605
       Left            =   0
       TabIndex        =   3
-      Top             =   3960
+      Top             =   4440
       Width           =   9885
-      Begin VB.CommandButton cmdCurrentProfile 
-         Caption         =   "P"
-         Height          =   255
-         Left            =   4950
-         TabIndex        =   16
-         Top             =   1620
-         Width           =   315
-      End
       Begin VB.CommandButton Command1 
          Caption         =   "Ú"
          BeginProperty Font 
@@ -183,7 +282,7 @@ Begin VB.Form Form1
          Height          =   195
          Index           =   1
          Left            =   4590
-         TabIndex        =   15
+         TabIndex        =   10
          Top             =   60
          Width           =   375
       End
@@ -202,80 +301,35 @@ Begin VB.Form Form1
          Height          =   195
          Index           =   0
          Left            =   4950
-         TabIndex        =   14
+         TabIndex        =   9
          Top             =   60
          Width           =   375
-      End
-      Begin VB.TextBox txtReport 
-         BeginProperty Font 
-            Name            =   "Courier New"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   1275
-         Left            =   60
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   9
-         Top             =   240
-         Width           =   9675
-      End
-      Begin VB.CommandButton Command2 
-         Caption         =   "Load && Compare"
-         Height          =   375
-         Left            =   8130
-         TabIndex        =   8
-         Top             =   4110
-         Width           =   1515
       End
       Begin VB.CommandButton cmdManualMatch 
          Caption         =   "Manual Match"
          Height          =   255
-         Left            =   6390
-         TabIndex        =   6
-         Top             =   1620
-         Width           =   1395
+         Left            =   6270
+         TabIndex        =   5
+         Top             =   300
+         Width           =   1815
       End
       Begin VB.CommandButton cmdBreakMatch 
          Caption         =   "Break Match"
          Enabled         =   0   'False
          Height          =   255
-         Left            =   7830
-         TabIndex        =   5
-         Top             =   1620
-         Width           =   1035
-      End
-      Begin VB.CommandButton cmdFind 
-         Caption         =   "Find"
-         Height          =   255
-         Left            =   5310
+         Left            =   8190
          TabIndex        =   4
-         Top             =   1620
-         Width           =   975
-      End
-      Begin MSComctlLib.ProgressBar pb 
-         Height          =   315
-         Left            =   2250
-         TabIndex        =   7
-         Top             =   4170
-         Width           =   5715
-         _ExtentX        =   10081
-         _ExtentY        =   556
-         _Version        =   393216
-         Appearance      =   1
+         Top             =   300
+         Width           =   1485
       End
       Begin MSComctlLib.ListView lvExact 
-         Height          =   2145
-         Left            =   30
-         TabIndex        =   10
-         Top             =   1920
+         Height          =   3915
+         Left            =   90
+         TabIndex        =   6
+         Top             =   600
          Width           =   9645
          _ExtentX        =   17013
-         _ExtentY        =   3784
+         _ExtentY        =   6906
          View            =   3
          LabelEdit       =   1
          MultiSelect     =   -1  'True
@@ -322,40 +376,14 @@ Begin VB.Form Form1
             Object.Width           =   6174
          EndProperty
       End
-      Begin VB.Label Label3 
-         BackColor       =   &H8000000A&
-         Caption         =   "Match config"
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FF0000&
-         Height          =   195
-         Left            =   3570
-         TabIndex        =   18
-         Top             =   1650
-         Width           =   1185
-      End
-      Begin VB.Label Label1 
-         Height          =   315
-         Left            =   30
-         TabIndex        =   13
-         Top             =   4170
-         Width           =   2295
-      End
       Begin VB.Label Label2 
          Caption         =   "Matched Functions"
          Height          =   195
          Index           =   0
-         Left            =   90
-         TabIndex        =   12
-         Top             =   1680
-         Width           =   1575
+         Left            =   150
+         TabIndex        =   8
+         Top             =   330
+         Width           =   1665
       End
       Begin VB.Label lblTransform 
          Alignment       =   2  'Center
@@ -365,16 +393,16 @@ Begin VB.Form Form1
          Caption         =   "Rename Tools"
          ForeColor       =   &H80000008&
          Height          =   255
-         Left            =   1710
-         TabIndex        =   11
-         Top             =   1620
-         Width           =   1395
+         Left            =   2040
+         TabIndex        =   7
+         Top             =   300
+         Width           =   2355
       End
    End
    Begin MSScriptControlCtl.ScriptControl sc 
       Index           =   0
       Left            =   8400
-      Top             =   0
+      Top             =   480
       _ExtentX        =   1005
       _ExtentY        =   1005
    End
@@ -382,7 +410,7 @@ Begin VB.Form Form1
       Height          =   2055
       Left            =   0
       TabIndex        =   0
-      Top             =   300
+      Top             =   780
       Width           =   4905
       _ExtentX        =   8652
       _ExtentY        =   3625
@@ -431,7 +459,7 @@ Begin VB.Form Form1
       Height          =   2055
       Left            =   4950
       TabIndex        =   1
-      Top             =   300
+      Top             =   780
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   3625
@@ -479,8 +507,8 @@ Begin VB.Form Form1
    Begin RichTextLib.RichTextBox txtB 
       Height          =   1545
       Left            =   4980
-      TabIndex        =   33
-      Top             =   2430
+      TabIndex        =   25
+      Top             =   2910
       Width           =   4905
       _ExtentX        =   8652
       _ExtentY        =   2725
@@ -500,8 +528,8 @@ Begin VB.Form Form1
    Begin RichTextLib.RichTextBox txtA 
       Height          =   1545
       Left            =   30
-      TabIndex        =   32
-      Top             =   2400
+      TabIndex        =   24
+      Top             =   2880
       Width           =   4875
       _ExtentX        =   8599
       _ExtentY        =   2725
@@ -518,12 +546,31 @@ Begin VB.Form Form1
          Strikethrough   =   0   'False
       EndProperty
    End
+   Begin MSComctlLib.ProgressBar pb 
+      Height          =   315
+      Left            =   5580
+      TabIndex        =   27
+      Top             =   120
+      Width           =   4275
+      _ExtentX        =   7541
+      _ExtentY        =   556
+      _Version        =   393216
+      Appearance      =   1
+   End
+   Begin VB.Label Label1 
+      ForeColor       =   &H00FF0000&
+      Height          =   315
+      Left            =   240
+      TabIndex        =   28
+      Top             =   120
+      Width           =   5235
+   End
    Begin VB.Label lblDBB 
       Caption         =   "Unmatched sample 2"
       Height          =   285
       Left            =   5010
-      TabIndex        =   17
-      Top             =   30
+      TabIndex        =   11
+      Top             =   510
       Width           =   4935
    End
    Begin VB.Label lblDBA 
@@ -531,8 +578,38 @@ Begin VB.Form Form1
       Height          =   195
       Left            =   60
       TabIndex        =   2
-      Top             =   60
+      Top             =   540
       Width           =   4695
+   End
+   Begin VB.Menu mnuTools 
+      Caption         =   "Tools"
+      Begin VB.Menu mnuLoadDatabase 
+         Caption         =   "Load New DataBase"
+      End
+      Begin VB.Menu mnuRescanCurrent 
+         Caption         =   "Rescan Current Database"
+      End
+      Begin VB.Menu mnuSpacer1 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuViewStats 
+         Caption         =   "View Current Stats"
+      End
+      Begin VB.Menu mnuCfgEngine 
+         Caption         =   "Configure Match Engine"
+      End
+      Begin VB.Menu mnuSpacer2 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuSearchFor 
+         Caption         =   "Search For..."
+      End
+      Begin VB.Menu mnuProfileSelected 
+         Caption         =   "Profile Selected Functions"
+      End
+      Begin VB.Menu mnuCurExportForDiff 
+         Caption         =   "WinMerge - Diff Disasm "
+      End
    End
    Begin VB.Menu mnuPopup 
       Caption         =   "mnuPopup"
@@ -571,11 +648,11 @@ Begin VB.Form Form1
          Index           =   0
       End
       Begin VB.Menu mnuRename 
-         Caption         =   "Port names from 1 to 2"
+         Caption         =   "Port user names from 1 to 2"
          Index           =   1
       End
       Begin VB.Menu mnuRename 
-         Caption         =   "Port names from 2 to 1"
+         Caption         =   "Port user names from 2 to 1"
          Index           =   2
       End
       Begin VB.Menu mnuRename 
@@ -652,6 +729,7 @@ Dim b As New Collection 'of cfunction, all funcs for idb 2
 Dim c As CFunction
 Dim h As CFunction
     
+Dim txtReport As String
 Public currentMDB As String
 Public SigMode As Boolean
 Dim sel_1 As ListItem
@@ -702,7 +780,7 @@ Private Sub cmdBreakMatch_Click()
             
 End Sub
 
-Private Sub cmdCurrentProfile_Click()
+Private Sub mnuProfileSelected_Click()
     On Error Resume Next
     Dim f As frmProfile
     
@@ -730,7 +808,11 @@ Private Sub cmdCurrentProfile_Click()
     
 End Sub
 
-Private Sub cmdFind_Click()
+Private Sub mnuRescanCurrent_Click()
+    LoadDataBase currentMDB
+End Sub
+
+Private Sub mnuSearchFor_Click()
     If cn.State = 0 Then
         MsgBox "You must open a database first.", vbInformation
         Exit Sub
@@ -750,13 +832,14 @@ Private Sub Form_Resize()
     If Me.Height < 9030 Then Me.Height = 9030
     If Me.Width < 10110 Then Me.Width = 10110
     
-    Frame1.Top = Me.Height - Frame1.Height - 400
+    Frame1.Top = Me.Height - Frame1.Height - 800
     txtA.Height = Frame1.Top - txtA.Top
     txtB.Height = txtA.Height
     
     txtA.Width = ((Me.Width / 2) - 40) - txtA.left
     txtB.left = txtA.left + txtA.Width + 20
     txtB.Width = Me.Width - txtB.left - 120
+    lblDBB.left = txtB.left
     
     lv1.Width = txtA.Width
     lv2.Width = txtB.Width
@@ -766,15 +849,16 @@ Private Sub Form_Resize()
     lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).Width = lv2.Width - lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).left - 100 - lv2.ColumnHeaders(lv2.ColumnHeaders.Count).Width
     
     Frame1.Width = Me.Width - 120
-    txtReport.Width = Frame1.Width - 120
-    lvExact.Width = txtReport.Width
+    'txtReport.Width = Frame1.Width - 120
+    lvExact.Width = Frame1.Width - 120
+    pb.Width = Me.Width - pb.left - 200
     
     Command1(1).left = txtB.left - Command1(1).Width
     Command1(0).left = txtB.left
     
 End Sub
 
-Private Sub Label3_Click()
+Private Sub mnuCfgEngine_Click()
     frmConfigMatches.Visible = True
 End Sub
 
@@ -934,7 +1018,7 @@ Private Sub Form_Load()
             SigMode = True
             mnuRename(0).Enabled = False
             mnuRename(1).Enabled = False
-            Command2.Visible = False
+            mnuLoadDatabase.Enabled = False
             cmdManualMatch.Visible = False
             cmdBreakMatch.value = False
             currentMDB = Trim(Replace(currentMDB, "/sigscan", Empty))
@@ -944,7 +1028,7 @@ Private Sub Form_Load()
             currentMDB = Empty
         Else
             Me.Visible = True
-            Command2_Click
+            LoadDataBase currentMDB
         End If
     End If
     
@@ -1363,10 +1447,18 @@ hell:
     MsgBox "Error Loading script Line:" & sc(1).Error.Line & "Desc:" & vbCrLf & vbCrLf & sc(1).Error.Description
 End Function
 
-Private Sub Command2_Click()
+Private Sub mnuLoadDatabase_click()
+    Dim pth As String
+    cmndlg1.SetCustomFilter "Access Databases", "*.mdb"
+    pth = cmndlg1.OpenDialog(CustomFilter)
+    If Len(pth) = 0 Then Exit Sub
+    currentMDB = pth
+    LoadDataBase currentMDB
+End Sub
+
+Sub LoadDataBase(pth As String)
 
     On Error Resume Next
-    Dim pth As String
     Dim minFunctions As Long
     Dim j As Long
     Dim li As ListItem
@@ -1384,14 +1476,6 @@ Private Sub Command2_Click()
             MsgBox "Could not locate compare.vbs for external match checks!", vbInformation
             Exit Sub
         End If
-    End If
-    
-    If Len(currentMDB) = 0 Then
-        cmndlg1.SetCustomFilter "Access Databases", "*.mdb"
-        pth = cmndlg1.OpenDialog(CustomFilter)
-    Else
-        pth = currentMDB
-        currentMDB = Empty
     End If
     
     If Len(pth) = 0 Then Exit Sub
@@ -1473,9 +1557,14 @@ Private Sub Command2_Click()
     pb.value = 0
     endTime = GetTickCount
     
+    Dim pcent As String
+    
     On Error Resume Next
+    pcent = CInt((lvExact.ListItems.Count / minFunctions) * 100) & "%"
+    Label1 = pcent & " similarity. See stats for details"
+    
     r(UBound(r)) = r(UBound(r)) & "  - made " & lvExact.ListItems.Count & " matchs"
-    push r, "Percent:  " & CInt((lvExact.ListItems.Count / minFunctions) * 100) & "%"
+    push r, "Percent:  " & pcent
     push r, "Elapsed Time: " & (endTime - startTime) \ 1000 & "secs"
     
     txtReport = Join(r, vbCrLf) & vbCrLf & Join(stats, vbCrLf)
@@ -1645,6 +1734,63 @@ Private Sub mnuCopySelection_Click()
     Clipboard.SetText GetAllElements(lvExact, True)
 End Sub
 
+Private Sub mnuCurExportForDiff_Click()
+    
+    Dim exe As String
+    Dim dll As String
+    Dim srcDll As String
+
+    Dim tmp As String
+    Dim a As String
+    Dim b As String
+   
+    On Error GoTo hell
+   
+    tmp = Environ("temp")
+   
+    If Not fso.FolderExists(tmp) Then
+        MsgBox "Temp envirnoment variable not set", vbInformation
+        Exit Sub
+    End If
+   
+    a = tmp & "\a.idacompare"
+    b = tmp & "\b.idacompare"
+   
+    dll = "C:\Program Files\WinMerge\MergePlugins\wmIDACompare.dll"
+    exe = "C:\Program Files\WinMerge\WinMergeU.exe"
+    srcDll = App.path & IIf(isIDE(), "\..\", "") & "\WinMerge_Plugin\wmIDACompare.dll"
+   
+    If Len(txtA.Text) = 0 Or Len(txtB.Text) = 0 Then
+        MsgBox "You must select two functions to diff first."
+        Exit Sub
+    End If
+   
+    If Not fso.FileExists(exe) Then
+        MsgBox "WinMerge not found. Please download from winmerge.org to use this feature." & _
+                vbCrLf & vbCrLf & "Expected path: " & exe, vbInformation
+        Exit Sub
+    End If
+   
+    If Not fso.FileExists(dll) Then
+        FileCopy srcDll, dll
+        MsgBox "The IDACompare Winmerge plugin has been automatically installed. You will have to enable plugins and then run it manually from the prediffer menu.", vbInformation
+    End If
+   
+    If wHash.HashFile(dll) <> wHash.HashFile(srcDll) Then
+        FileCopy srcDll, dll
+        Me.caption = "The IDACompare Winmerge plugin has been updated."
+    End If
+   
+    writeFile a, txtA.Text
+    writeFile b, txtB.Text
+    Shell exe & " " & a & " " & b, vbNormalFocus
+    
+    Exit Sub
+hell:
+        MsgBox Err.Description
+        
+End Sub
+
 Private Sub mnuRename_Click(index As Integer)
     
     If index = 3 Then GoTo helpmsg
@@ -1701,3 +1847,6 @@ helpmsg:
 End Sub
 
  
+Private Sub mnuViewStats_Click()
+    frmDataViewer.ShowData txtReport
+End Sub

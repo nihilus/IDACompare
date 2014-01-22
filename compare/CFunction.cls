@@ -42,7 +42,7 @@ Public mCRC As String
 Public li As ListItem
 Public esp As Long
 Public MatchMethod As String
-Public fxCalls As New Collection
+Public fxCalls As New Collection   'of functions by name
 Public Constants As New Collection
 Public labels As New Collection
 Public Standardized As String
@@ -71,17 +71,7 @@ Function StandardizeAsm(ByVal asm As String) As String
             
             If InStr(tmp(j), "call") > 0 Then
                 Calls = Calls + 1
-                If InStr(tmp(j), "sub_") < 1 Then 'not unnamed function call
-                    If InStr(tmp(j), "ds:") > 0 Then 'is api call
-                        t = Replace(tmp(j), "ds:", "")
-                        t = Replace(t, "call ", "")
-                        If InStr(t, ";") > 0 Then t = Mid(t, 1, InStr(t, ";") - 1)
-                        If Len(Trim(t)) > 3 Then 'ignore call reg32
-                            fxCalls.Add Trim(t)
-                            'Debug.Print Trim(t)
-                        End If
-                    End If
-                End If
+                AddCall tmp(j)
             ElseIf InStr(tmp(j), "push") > 0 Then
                 Pushs = Pushs + 1
             ElseIf left(tmp(j), 1) = "j" Then
@@ -105,7 +95,9 @@ Function StandardizeAsm(ByVal asm As String) As String
     Standardized = Replace(Standardized, vbCrLf & vbCrLf, vbCrLf) 'strip empty lines (where labels were)
     mCRC = crc(Standardized)
     StandardizeAsm = mCRC
-     
+    
+    'should we set standardized as empty now to free up memory? I dont think we use it again..
+    
 End Function
 
 Function ReHash(ByVal asm)
@@ -116,6 +108,35 @@ Function ReHash(ByVal asm)
     ReHash = crc(Join(tmp, vbCrLf))
     mCRC = ReHash
 End Function
+
+Private Sub AddCall(asm As String)
+    
+    Dim a As Long
+    Dim t As String
+    
+    If InStr(asm, "sub_") > 1 Then Exit Sub 'its an internal function reference no use for diffing..offsets change.
+    
+    If InStr(asm, "ds:") > 0 Then 'is api style call
+        t = Replace(asm, "ds:", "")
+        t = Replace(t, "call ", "")
+        If InStr(t, ";") > 0 Then t = Mid(t, 1, InStr(t, ";") - 1)
+        If Len(Trim(t)) > 3 Then 'ignore call reg32
+            fxCalls.Add Trim(t)
+        End If
+    ElseIf InStr(asm, ";") Then 'there is a comment its probably an "call edi ;Sleep" format
+        t = Trim(Mid(asm, InStr(asm, ";") + 1))
+        fxCalls.Add Trim(t)
+    Else
+        a = InStr(asm, "call ")
+        If a > 0 Then
+            t = Mid(asm, a + 5)
+            fxCalls.Add Trim(t)
+        End If
+        
+    End If
+               
+                
+End Sub
 
 Private Sub Standardize(tmp() As String, Optional stdJmps As Boolean = True, Optional stripArgs As Boolean = True)
     Dim i As Long, x, cmd

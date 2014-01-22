@@ -22,6 +22,11 @@ Option Explicit
 
 Global crc As New clsCrc
 Global sort As New CAlphaSort
+Global dlg As New clsCmnDlg
+Global fso As New CFileSystem2
+Global wHash As New CWinHash
+
+Const LANG_US = 1049
 
 Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
     
@@ -263,6 +268,20 @@ Function ReadFile(filename)
      temp = Input(FileLen(filename), #f) ' Get entire Files data
    Close #f
    ReadFile = temp
+End Function
+
+Function writeFile(path, it) As Boolean 'this one should be binary safe...
+    On Error GoTo hell
+    Dim b() As Byte, f As Long
+    If FileExists(path) Then Kill path
+    f = FreeFile
+    b() = StrConv(it, vbFromUnicode, LANG_US)
+    Open path For Binary As #f
+    Put f, , b()
+    Close f
+    writeFile = True
+    Exit Function
+hell: writeFile = False
 End Function
 
 '

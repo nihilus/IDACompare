@@ -3,6 +3,9 @@ Author:    David Zimmer <dzzie@yahoo.com>
 License:   GPL
 Copyright: Copyright (C) 2005 iDefense.com, A Verisign Company
 
+
+  IDACompare_Setup.exe will register dependancies and install full source bundle.
+
 Overview:
 
  IDACompare is a plugin for IDA which is designed to help you
