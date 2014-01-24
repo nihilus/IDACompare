@@ -56,6 +56,59 @@ Begin VB.Form Form1
          TabIndex        =   13
          Top             =   60
          Width           =   5715
+         Begin VB.Frame Frame2 
+            Caption         =   " WinMerge Plugin Config "
+            Height          =   1605
+            Left            =   1830
+            TabIndex        =   28
+            Top             =   420
+            Width           =   3795
+            Begin VB.OptionButton optWinMergeFilter 
+               Caption         =   "Debug UI"
+               Height          =   315
+               Index           =   2
+               Left            =   240
+               TabIndex        =   31
+               Top             =   1110
+               Width           =   1455
+            End
+            Begin VB.OptionButton optWinMergeFilter 
+               Caption         =   "Signature"
+               Height          =   345
+               Index           =   1
+               Left            =   240
+               TabIndex        =   30
+               Top             =   690
+               Width           =   1455
+            End
+            Begin VB.OptionButton optWinMergeFilter 
+               Caption         =   "Agressive"
+               Height          =   315
+               Index           =   0
+               Left            =   240
+               TabIndex        =   29
+               Top             =   330
+               Width           =   1455
+            End
+         End
+         Begin VB.CheckBox chkExternalMatchScript 
+            Caption         =   "External Match Script ( see compare.vbs )"
+            BeginProperty Font 
+               Name            =   "MS Sans Serif"
+               Size            =   8.25
+               Charset         =   0
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            Height          =   315
+            Left            =   270
+            TabIndex        =   27
+            Top             =   2880
+            Value           =   1  'Checked
+            Width           =   3495
+         End
          Begin VB.CheckBox chkConstMatch 
             Caption         =   "ConstMatch"
             BeginProperty Font 
@@ -68,9 +121,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   22
-            Top             =   3000
+            Left            =   270
+            TabIndex        =   20
+            Top             =   2490
             Value           =   1  'Checked
             Width           =   2295
          End
@@ -86,9 +139,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   21
-            Top             =   2640
+            Left            =   270
+            TabIndex        =   19
+            Top             =   2130
             Value           =   1  'Checked
             Width           =   2295
          End
@@ -104,9 +157,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   20
-            Top             =   300
+            Left            =   270
+            TabIndex        =   18
+            Top             =   330
             Value           =   1  'Checked
             Width           =   1185
          End
@@ -122,9 +175,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   19
-            Top             =   2280
+            Left            =   270
+            TabIndex        =   17
+            Top             =   1770
             Value           =   1  'Checked
             Width           =   2295
          End
@@ -140,9 +193,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   18
-            Top             =   1890
+            Left            =   270
+            TabIndex        =   16
+            Top             =   1410
             Value           =   1  'Checked
             Width           =   2295
          End
@@ -158,9 +211,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   315
-            Left            =   690
-            TabIndex        =   17
-            Top             =   1500
+            Left            =   270
+            TabIndex        =   15
+            Top             =   1050
             Value           =   1  'Checked
             Width           =   2295
          End
@@ -176,63 +229,11 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   285
-            Left            =   690
-            TabIndex        =   16
-            Top             =   690
+            Left            =   270
+            TabIndex        =   14
+            Top             =   720
             Value           =   1  'Checked
             Width           =   1245
-         End
-         Begin VB.OptionButton optExternalEngine 
-            Caption         =   "External match script"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   3540
-            TabIndex        =   15
-            Top             =   1080
-            Width           =   1815
-         End
-         Begin VB.OptionButton optInternalMatchEngine 
-            Caption         =   "Use Internal Match Engine"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   345
-            Left            =   210
-            TabIndex        =   14
-            Top             =   1080
-            Value           =   -1  'True
-            Width           =   2265
-         End
-         Begin VB.Label lblExternalHelp 
-            Caption         =   "lblExternalHelp"
-            BeginProperty Font 
-               Name            =   "MS Sans Serif"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   1815
-            Left            =   3150
-            TabIndex        =   26
-            Top             =   1560
-            Width           =   2505
          End
          Begin VB.Label lblCloseConfig 
             BackColor       =   &H00FFFFFF&
@@ -248,7 +249,7 @@ Begin VB.Form Form1
             EndProperty
             Height          =   375
             Left            =   5040
-            TabIndex        =   23
+            TabIndex        =   21
             Top             =   60
             Width           =   615
          End
@@ -259,7 +260,7 @@ Begin VB.Form Form1
       Height          =   75
       Left            =   60
       MousePointer    =   7  'Size N S
-      TabIndex        =   29
+      TabIndex        =   26
       Top             =   2760
       Width           =   9855
    End
@@ -517,7 +518,7 @@ Begin VB.Form Form1
    Begin RichTextLib.RichTextBox txtB 
       Height          =   1545
       Left            =   4980
-      TabIndex        =   25
+      TabIndex        =   23
       Top             =   2910
       Width           =   4905
       _ExtentX        =   8652
@@ -539,7 +540,7 @@ Begin VB.Form Form1
    Begin RichTextLib.RichTextBox txtA 
       Height          =   1545
       Left            =   30
-      TabIndex        =   24
+      TabIndex        =   22
       Top             =   2880
       Width           =   4875
       _ExtentX        =   8599
@@ -561,7 +562,7 @@ Begin VB.Form Form1
    Begin MSComctlLib.ProgressBar pb 
       Height          =   315
       Left            =   5580
-      TabIndex        =   27
+      TabIndex        =   24
       Top             =   120
       Width           =   4275
       _ExtentX        =   7541
@@ -573,7 +574,7 @@ Begin VB.Form Form1
       ForeColor       =   &H00FF0000&
       Height          =   315
       Left            =   240
-      TabIndex        =   28
+      TabIndex        =   25
       Top             =   120
       Width           =   5235
    End
@@ -788,6 +789,10 @@ Private Declare Function SetCapture Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
 
 
+
+Private Sub optWinMergeFilter_Click(index As Integer)
+    SaveSetting "winmerge", "settings", "defaultFilter", index
+End Sub
 
 'splitter code
 '------------------------------------------------
@@ -1220,13 +1225,16 @@ Sub LoadChkSettings(Optional load As Boolean = True)
     Dim cc As CheckBox
     Dim c As Control
     Dim r As Long
+    Dim defVal As Long
     
     On Error Resume Next
     For Each c In Me.Controls
         If TypeName(c) = "CheckBox" Then
             Set cc = c
+            defVal = 1
+            If cc.Name = chkExternalMatchScript.Name Then defVal = 0
             If load Then
-                r = GetSetting("IDACompare", "settings", cc.Name, 1)
+                r = GetSetting("IDACompare", "settings", cc.Name, defVal)
                 cc.value = r
             Else
                 Call SaveSetting("IDACompare", "settings", cc.Name, cc.value)
@@ -1248,6 +1256,9 @@ End Function
 
 Private Sub Form_Load()
     Dim cmd As String
+    Dim filtIndex As Long
+    
+    On Error Resume Next
     
     idaClient.Listen Me.hwnd
     mnuPopup.Visible = False
@@ -1259,16 +1270,10 @@ Private Sub Form_Load()
     DoMove
     Form_Resize
     
+    filtIndex = GetSetting("winmerge", "settings", "defaultFilter", 1)
+    optWinMergeFilter(filtIndex).value = True
     LoadChkSettings
-    optInternalMatchEngine.value = GetSetting("IDACompare", "settings", "optInternalMatchEngine", True)
-    If Not optInternalMatchEngine.value Then optExternalEngine.value = True
     
-    lblExternalHelp = "This will use the match functions in compare.vbs to " & _
-                        "determine matchs rather than the default compiled in " & _
-                        "logic." & _
-                        "This gives you a way to fine tune the match logic " & _
-                        "to your needs without having to have VB or recompile"
-           
     cmd = Command
     'If isIDE() Then cmd = App.path & "\..\mydoom_example.mdb"
     
@@ -1735,7 +1740,7 @@ Sub LoadDataBase(pth As String)
     GlobalResets
     startTime = GetTickCount
     
-    If optExternalEngine.value Then
+    If chkExternalMatchScript.value = 1 Then
         If Not FileExists(App.path & "\compare.vbs") Then
             MsgBox "Could not locate compare.vbs for external match checks!", vbInformation
             Exit Sub
@@ -1775,36 +1780,36 @@ Sub LoadDataBase(pth As String)
         push stats(), "Name Matches: " & matches
     End If
     
-    If optExternalEngine.value Then
-        If Not LoadScript() Then Exit Sub
-        RunMatchSubs
-    Else
-        If chkApiMatch.value = 1 Then
-            matches = APIMatch()
-            push stats(), "API Matches: " & matches
-        End If
-        
-        If chkEspMatch.value = 1 Then
-            matches = EspMatch()
-            push stats(), "ESP Matches: " & matches
-        End If
-        
-        If chkCallPushMatch.value = 1 Then
-            matches = CallPushMatch()
-            push stats(), "CallPush Matches: " & matches
-        End If
-        
-        If chkApiMatch2.value = 1 Then
-            matches = APIMatch2()
-            push stats(), "API2 Matches: " & matches
-        End If
-        
-        If chkConstMatch.value = 1 Then
-            matches = ConstMatch()
-            push stats(), "Const Matches: " & matches
-        End If
-        
+    If chkApiMatch.value = 1 Then
+        matches = APIMatch()
+        push stats(), "API Matches: " & matches
     End If
+    
+    If chkEspMatch.value = 1 Then
+        matches = EspMatch()
+        push stats(), "ESP Matches: " & matches
+    End If
+    
+    If chkCallPushMatch.value = 1 Then
+        matches = CallPushMatch()
+        push stats(), "CallPush Matches: " & matches
+    End If
+    
+    If chkApiMatch2.value = 1 Then
+        matches = APIMatch2()
+        push stats(), "API2 Matches: " & matches
+    End If
+    
+    If chkConstMatch.value = 1 Then
+        matches = ConstMatch()
+        push stats(), "Const Matches: " & matches
+    End If
+        
+        
+    If chkExternalMatchScript.value = 1 Then
+        If LoadScript() Then RunMatchSubs
+    End If
+ 
 
     ResetPB m1.Count, "Adding Matchs"
     AddMatchs
@@ -1848,7 +1853,7 @@ Private Sub Form_Unload(Cancel As Integer)
     FormPos Me, True, True
     LoadChkSettings False
     SaveSetting "IDACompare", "settings", "SplitterTop", splitter.Top
-    SaveSetting "IDACompare", "settings", "optInternalMatchEngine", optInternalMatchEngine.value
+    'SaveSetting "IDACompare", "settings", "optInternalMatchEngine", optInternalMatchEngine.value
     SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
     Set cmndlg1 = Nothing
     

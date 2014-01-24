@@ -51,6 +51,7 @@ Source: WinMerge_Plugin\README.txt; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMergeScript.cls; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMerge_IDACompare.vbp; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMerge_IDACompare.vbw; DestDir: {app}\WinMerge_Plugin\
+Source: WinMerge_Plugin\frmVisualDebug.frm; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\wmIDACompare.dll; DestDir: {app}\WinMerge_Plugin\;  Flags: regserver
 
 

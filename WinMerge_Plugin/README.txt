@@ -10,13 +10,10 @@ In order to use this plugin, you will have to:
 1) enabled plugins: Plugins -> List -> enable checkbox
 2) after the file diff, run it manually Plugins-> Prediffer -> wmIDACompare.dll
 
-Its a pretty agressive asm standardizer. but so far seems decent but you will need to know
-how to read asm to make sure you are looking at the same function or not. 
-
-basically it reduces the diffing to just the instruction (and order of instructions)
-ignoring all arguments and jump labels. 
-
-It doesnt have to be this agressive, way more can be done to this and will be if need be.
+The plugin contains two different match engines. You configure it through the main
+IDACompare config pane. The Debug UI setting will popup a modal form allowing you
+to manually apply and edit the transformations before returning it to Winmerge.
+(see screen shot)
 
 IDACompare will auto-install the plugin to the winmegre plugins directory first time you
 goto use it from the Tools menu. The installer will register it on the system in the registry.

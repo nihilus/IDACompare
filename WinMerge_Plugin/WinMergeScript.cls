@@ -54,8 +54,19 @@ Public Function PrediffBufferW(ByRef text As String, ByRef size As Long, ByRef b
   On Error Resume Next
   
   Dim sTemp As String
+  Dim defaultFilter As Long
+   
+  defaultFilter = CLng(GetSetting("winmerge", "settings", "defaultFilter", 0))
   
-  text = Standardize(text, False, True)
+  'MsgBox "Using filter: " & defaultFilter
+  
+  Select Case defaultFilter
+      Case 0: text = Aggressive(text, False, True)
+      Case 1: text = LessAggressive(text)
+      Case 2: text = frmVisualDebug.DebugFilter(text, Me)
+      Case Default: MsgBox "An unknown default filter is set for IDACompare Winmerge plugin? Index: " & defaultFilter
+  End Select
+  
   size = Len(text)
   bChanged = True
   
@@ -66,7 +77,7 @@ Public Function PrediffBufferW(ByRef text As String, ByRef size As Long, ByRef b
 End Function
 
 'this is probably overly agressive but seems to have fairly good results on initial tests.
-Private Function Standardize(text As String, Optional stdJmps As Boolean = True, Optional stripArgs As Boolean = True) As String
+Public Function Aggressive(text As String, Optional stdJmps As Boolean = True, Optional stripArgs As Boolean = True) As String
 
     Dim tmp() As String
     Dim i As Long, x, cmd
@@ -100,7 +111,89 @@ Private Function Standardize(text As String, Optional stdJmps As Boolean = True,
         End If
     Next
     
-    Standardize = Join(tmp, vbCrLf)
+    Aggressive = Join(tmp, vbCrLf)
+    
+End Function
+
+Public Function LessAggressive(text As String) As String
+
+    Dim tmp() As String
+    Dim i As Long, x, cmd
+    Const stdJmps As Boolean = True
+    Const stripArgs As Boolean = True
+    
+    Dim baseCmd As String
+    Dim a As Long
+    
+    tmp = Split(text, vbCrLf)
+    
+    For i = 0 To UBound(tmp)
+        If Right(tmp(i), 1) = ":" Then
+            'its a label strip after the _ if it has one
+            a = InStr(tmp(i), "_")
+            If a < 1 Then
+                tmp(i) = Empty
+            Else
+                tmp(i) = Mid(tmp(i), 1, a) 'at least we leave a label was here marker better than blank space..
+            End If
+        Else
+            tmp(i) = Replace(tmp(i), vbTab, " ")
+            tmp(i) = Replace(tmp(i), "  ", " ")
+            tmp(i) = Trim(tmp(i))
+            
+            If Len(tmp(i)) > 0 Then
+                cmd = Split(tmp(i), " ")
+                baseCmd = cmd(0)
+                 
+                'now lets build a command signature based on some markers that dont change..
+                If InStr(tmp(i), "[") > 0 Then baseCmd = baseCmd & "[]"
+                If InStr(tmp(i), "+") > 0 Then baseCmd = baseCmd & "+"
+                If InStr(tmp(i), "-") > 0 Then baseCmd = baseCmd & "-"
+                If InStr(tmp(i), "*") > 0 Then baseCmd = baseCmd & "*"
+                If ExtractConstant(tmp(i), x) Then baseCmd = baseCmd & x
+                    
+                x = InStr(tmp(i), ";")
+                If x > 0 Then baseCmd = baseCmd & Mid(tmp(i), x) 'append on any automatic comment IDA included
+                tmp(i) = Trim(baseCmd)
+                
+            End If
+            
+        End If
+    Next
+    
+    LessAggressive = Join(tmp, vbCrLf)
+    
+End Function
+
+Private Function ExtractConstant(ByVal asm, ByRef ConstVal) As Boolean
+    Dim tmp() As String
+    Dim i As Long
+    Dim a As Long
+    
+    a = InStr(asm, ";")
+    If a > 0 Then asm = Mid(asm, 1, a)
+    
+    If Right(asm, 1) = "]" Then
+        asm = Mid(asm, 1, Len(asm) - 1)
+        asm = Replace(asm, "+", " ")
+        asm = Replace(asm, "-", " ")
+        asm = Replace(asm, "*", " ")
+    End If
+    
+    asm = Replace(asm, vbTab, " ")
+    
+    While InStr(asm, "  ") > 0
+        asm = Replace(asm, "  ", " ")
+    Wend
+
+    asm = Trim(asm)
+    tmp = Split(asm, " ")
+   
+    tmp(i) = Trim(tmp(UBound(tmp)))
+    If Right(tmp(i), 1) = "h" And Len(tmp(i)) > 3 Then
+        ConstVal = tmp(i)
+        ExtractConstant = True
+    End If
     
 End Function
 
