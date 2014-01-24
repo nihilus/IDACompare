@@ -5,7 +5,7 @@ Begin VB.Form frmFind
    Caption         =   "Find Functions"
    ClientHeight    =   2760
    ClientLeft      =   45
-   ClientTop       =   330
+   ClientTop       =   615
    ClientWidth     =   6870
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
@@ -104,6 +104,15 @@ Begin VB.Form frmFind
       Top             =   2460
       Width           =   915
    End
+   Begin VB.Menu mnuPopup 
+      Caption         =   "mnuPopup"
+      Begin VB.Menu mnuCopy 
+         Caption         =   "Copy"
+      End
+      Begin VB.Menu mnuCopyAll 
+         Caption         =   "Copy All"
+      End
+   End
 End
 Attribute VB_Name = "frmFind"
 Attribute VB_GlobalNameSpace = False
@@ -128,6 +137,9 @@ Option Explicit
 '         You should have received a copy of the GNU General Public License along with
 '         this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 '         Place, Suite 330, Boston, MA 02111-1307 USA
+
+Dim selLV As ListView
+
 Private Sub cmdSearch_Click()
 
     Dim rs As Recordset
@@ -192,6 +204,7 @@ End Function
  
 Private Sub Form_Load()
     On Error Resume Next
+    mnuPopup.Visible = False
     With lv1.ColumnHeaders(2)
         .Width = lv1.Width - .left - 100
     End With
@@ -200,19 +213,94 @@ Private Sub Form_Load()
     End With
 End Sub
 
-'works for unmatched only
+
 Private Sub lv1_ItemClick(ByVal Item As MSComctlLib.ListItem)
     On Error Resume Next
+    
+    Dim id As Long
+    Dim asm As String
     Dim li As ListItem
-    Set li = Form1.lv1.ListItems(Item.key)
-    If Not li Is Nothing Then Form1.lv1_ItemClick li
+    
+    Set li = Form1.lv1.ListItems(Item.key) 'works for unmatched only
+    
+    If Not li Is Nothing Then
+        Form1.lv1_ItemClick li
+    Else
+        'its a matched function
+        id = Form1.FindMatchAutoID(Item.Text, True)
+        If id <> 0 Then
+            asm = ado("Select disasm from a where autoid=" & id)!disasm
+            rtfHighlightAsm asm, Nothing, Form1.txtA
+        End If
+    End If
+    
 End Sub
 
-'works for unmatched only
+   
 Private Sub lv2_ItemClick(ByVal Item As MSComctlLib.ListItem)
     On Error Resume Next
+    
+    Dim id As Long
+    Dim asm As String
     Dim li As ListItem
-    Set li = Form1.lv2.ListItems(Item.key)
-    If Not li Is Nothing Then Form1.lv2_ItemClick li
+    
+    Set li = Form1.lv2.ListItems(Item.key) 'works for unmatched only
+    
+    If Not li Is Nothing Then
+        Form1.lv2_ItemClick li
+    Else
+        'its a matched function
+        id = Form1.FindMatchAutoID(Item.Text, False)
+        If id <> 0 Then
+            asm = ado("Select disasm from b where autoid=" & id)!disasm
+            rtfHighlightAsm asm, Nothing, Form1.txtB
+        End If
+    End If
+    
 End Sub
+
+
+Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Set selLV = lv1
+    If Button = 2 Then PopupMenu mnuPopup
+End Sub
+
+Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Set selLV = lv2
+    If Button = 2 Then PopupMenu mnuPopup
+End Sub
+
+Private Sub mnuCopy_Click()
+    On Error Resume Next
+    If selLV Is Nothing Then Exit Sub
+    Clipboard.Clear
+    Clipboard.SetText selLV.SelectedItem.Text
+End Sub
+
+Private Sub mnuCopyAll_Click()
+
+    On Error Resume Next
+    If selLV Is Nothing Then Exit Sub
+    
+    Dim tmp As String
+    Dim li As ListItem
+    
+    For Each li In selLV.ListItems
+        tmp = tmp & li.Text & vbCrLf
+    Next
+    
+    Clipboard.Clear
+    Clipboard.SetText tmp
+    
+End Sub
+
+
+
+
+
+
+
+
+
+
 

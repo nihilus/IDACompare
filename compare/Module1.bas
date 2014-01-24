@@ -140,6 +140,35 @@ Sub push(ary, value) 'this modifies parent ary object
 init:     ReDim ary(0): ary(0) = value
 End Sub
  
+Function pad(v, Optional l As Long = 4)
+    On Error GoTo hell
+    Dim x As Long
+    x = Len(v)
+    If x < l Then
+        pad = String(l - x, " ") & v
+    Else
+hell:
+        pad = v
+    End If
+End Function
+
+Public Sub LV_ColumnSort(ListViewControl As ListView, Column As ColumnHeader)
+     On Error Resume Next
+    With ListViewControl
+       If .SortKey <> Column.index - 1 Then
+             .SortKey = Column.index - 1
+             .SortOrder = lvwAscending
+       Else
+             If .SortOrder = lvwAscending Then
+              .SortOrder = lvwDescending
+             Else
+              .SortOrder = lvwAscending
+             End If
+       End If
+       .Sorted = -1
+    End With
+End Sub
+
 Sub FormPos(fform As Form, Optional andSize As Boolean = False, Optional save_mode As Boolean = False)
     
     On Error Resume Next

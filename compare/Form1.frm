@@ -1,7 +1,7 @@
 VERSION 5.00
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
+Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
    ClientHeight    =   9195
@@ -18,6 +18,7 @@ Begin VB.Form Form1
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   9195
    ScaleWidth      =   9975
    StartUpPosition =   2  'CenterScreen
@@ -33,11 +34,11 @@ Begin VB.Form Form1
          Strikethrough   =   0   'False
       EndProperty
       Height          =   3675
-      Left            =   1260
+      Left            =   1860
       ScaleHeight     =   3615
       ScaleWidth      =   5865
       TabIndex        =   12
-      Top             =   780
+      Top             =   720
       Width           =   5925
       Begin VB.Frame frmConfigMatchesInner 
          Caption         =   " Configure Match Engine "
@@ -253,6 +254,15 @@ Begin VB.Form Form1
          End
       End
    End
+   Begin VB.Frame splitter 
+      BackColor       =   &H00808080&
+      Height          =   75
+      Left            =   60
+      MousePointer    =   7  'Size N S
+      TabIndex        =   29
+      Top             =   2760
+      Width           =   9855
+   End
    Begin VB.Frame Frame1 
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -407,13 +417,13 @@ Begin VB.Form Form1
       _ExtentY        =   1005
    End
    Begin MSComctlLib.ListView lv1 
-      Height          =   2055
+      Height          =   1935
       Left            =   0
       TabIndex        =   0
       Top             =   780
       Width           =   4905
       _ExtentX        =   8652
-      _ExtentY        =   3625
+      _ExtentY        =   3413
       View            =   3
       LabelEdit       =   1
       LabelWrap       =   -1  'True
@@ -456,13 +466,13 @@ Begin VB.Form Form1
       EndProperty
    End
    Begin MSComctlLib.ListView lv2 
-      Height          =   2055
+      Height          =   1935
       Left            =   4950
       TabIndex        =   1
       Top             =   780
       Width           =   4935
       _ExtentX        =   8705
-      _ExtentY        =   3625
+      _ExtentY        =   3413
       View            =   3
       LabelEdit       =   1
       LabelWrap       =   -1  'True
@@ -513,6 +523,7 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":0000
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -534,6 +545,7 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":007C
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -583,6 +595,9 @@ Begin VB.Form Form1
    End
    Begin VB.Menu mnuTools 
       Caption         =   "Tools"
+      Begin VB.Menu mnuLoadLast 
+         Caption         =   "Load Last DataBase"
+      End
       Begin VB.Menu mnuLoadDatabase 
          Caption         =   "Load New DataBase"
       End
@@ -607,8 +622,20 @@ Begin VB.Form Form1
       Begin VB.Menu mnuProfileSelected 
          Caption         =   "Profile Selected Functions"
       End
+      Begin VB.Menu mnuDecompileSelected 
+         Caption         =   "Decompile Selected Functions"
+      End
       Begin VB.Menu mnuCurExportForDiff 
          Caption         =   "WinMerge - Diff Disasm "
+      End
+      Begin VB.Menu mnuReconnectIDASrvr 
+         Caption         =   "Reconnect To IDASrvr"
+      End
+   End
+   Begin VB.Menu mnuLVPopup 
+      Caption         =   "mnuLVPopup"
+      Begin VB.Menu mnuTopCopyFuncNames 
+         Caption         =   "Copy Function Names"
       End
    End
    Begin VB.Menu mnuPopup 
@@ -732,9 +759,19 @@ Dim h As CFunction
 Dim txtReport As String
 Public currentMDB As String
 Public SigMode As Boolean
+
+
+Dim selLV As ListView
 Dim sel_1 As ListItem
 Dim sel_2 As ListItem
 Dim sel_exact As ListItem
+
+Dim idaClient As New cIDAClient
+Dim idaHwndA As Long
+Dim idaHwndB As Long
+
+Dim fullIDB_A As String
+Dim fullIDB_B As String
 
 Dim idb_a As String
 Dim idb_b As String
@@ -746,6 +783,66 @@ Enum CompareModes
     TmpMode = 3
 End Enum
 
+Private Capturing As Boolean
+Private Declare Function SetCapture Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function ReleaseCapture Lib "user32" () As Long
+
+
+
+'splitter code
+'------------------------------------------------
+Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Dim a1&
+
+    If Button = 1 Then 'The mouse is down
+        If Capturing = False Then
+            splitter.ZOrder
+            SetCapture splitter.hwnd
+            Capturing = True
+        End If
+        With splitter
+            a1 = .Top + y
+            If MoveOk(a1) Then
+                .Top = a1
+            End If
+        End With
+    End If
+End Sub
+
+Private Sub splitter_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Capturing Then
+        ReleaseCapture
+        Capturing = False
+        DoMove
+    End If
+End Sub
+
+
+Private Sub DoMove()
+    On Error Resume Next
+    Dim tw As Integer 'Twips Width
+    Dim th As Integer 'Twips Height
+    tw = Screen.TwipsPerPixelX
+    th = Screen.TwipsPerPixelY
+    Const buf = 30
+    txtA.Top = splitter.Top + splitter.Height + buf
+    txtA.Height = Me.Height - txtA.Top - (th * 60)
+    txtB.Top = txtA.Top
+    txtB.Height = txtA.Height
+    lv1.Height = splitter.Top - lv1.Top - buf
+    lv2.Height = lv1.Height
+End Sub
+
+
+Private Function MoveOk(y&) As Boolean  'Put in any limiters you desire
+    MoveOk = False
+    If y > lv1.Top + 1000 And y < Me.Height - (Frame1.Height * 1.5) Then
+        MoveOk = True
+    End If
+End Function
+
+'------------------------------------------------
+'end splitter code
 
 
  
@@ -780,6 +877,77 @@ Private Sub cmdBreakMatch_Click()
             
 End Sub
 
+Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    On Error Resume Next
+    Dim f As String
+    f = data.Files(1)
+    If fso.GetExtension(f) = ".mdb" Then
+        currentMDB = f
+        LoadDataBase f
+    End If
+End Sub
+
+Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Set selLV = lv1
+    If Button = 2 Then PopupMenu mnuLVPopup
+End Sub
+
+Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Set selLV = lv2
+    If Button = 2 Then PopupMenu mnuLVPopup
+End Sub
+
+
+Private Sub lv2_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
+    LV_ColumnSort lv2, ColumnHeader
+End Sub
+
+Private Sub lv1_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
+    LV_ColumnSort lv1, ColumnHeader
+End Sub
+
+Private Sub lv1_KeyPress(KeyAscii As Integer)
+    If Chr(KeyAscii) = "p" Then
+        mnuProfileSelected_Click
+        KeyAscii = 0 'have to eat the keypress so that it doesnt auto find the first function starting with p
+    End If
+    If Chr(KeyAscii) = "d" Then
+        mnuDecompileSelected_Click
+        KeyAscii = 0
+    End If
+End Sub
+
+Private Sub lv2_KeyPress(KeyAscii As Integer)
+    If Chr(KeyAscii) = "p" Then
+        mnuProfileSelected_Click
+        KeyAscii = 0 'have to eat the keypress so that it doesnt auto find the first function starting with p
+    End If
+    If Chr(KeyAscii) = "d" Then
+        mnuDecompileSelected_Click
+        KeyAscii = 0
+    End If
+End Sub
+
+Private Sub lvExact_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
+     LV_ColumnSort lvExact, ColumnHeader
+End Sub
+
+Private Sub lvExact_KeyPress(KeyAscii As Integer)
+    If Chr(KeyAscii) = "p" Then
+        mnuProfileSelected_Click
+        KeyAscii = 0 'have to eat the keypress so that it doesnt auto find the first function starting with p
+    End If
+    If Chr(KeyAscii) = "d" Then
+        mnuDecompileSelected_Click
+        KeyAscii = 0
+    End If
+End Sub
+
+Private Sub mnuLoadLast_Click()
+    currentMDB = GetSetting("IDACompare", "settings", "lastMDB", currentMDB)
+    LoadDataBase currentMDB
+End Sub
+
 Private Sub mnuProfileSelected_Click()
     On Error Resume Next
     Dim f As frmProfile
@@ -806,6 +974,81 @@ Private Sub mnuProfileSelected_Click()
     Set f = New frmProfile
     f.ShowProfile c, h
     
+End Sub
+
+Private Sub mnuDecompileSelected_Click()
+
+    On Error Resume Next
+    Dim a As String
+    Dim b As String
+    Dim va As Long
+    Dim funcA As String, funcB As String
+     
+    On Error Resume Next
+    
+    If Not sel_exact Is Nothing Then
+    
+        With idaClient
+        
+            If idaHwndA <> 0 Then
+                 .ActiveIDA = idaHwndA
+                 va = .FuncVAByName(sel_exact.Text)
+                 If va <> 0 Then a = .Decompile(va)
+            End If
+        
+            If idaHwndB <> 0 Then
+                 .ActiveIDA = idaHwndB
+                 va = .FuncVAByName(sel_exact.SubItems(1))
+                 If va <> 0 Then b = .Decompile(va)
+            End If
+            
+            If Len(a) > 0 Then txtA.Text = a
+            If Len(b) > 0 Then txtB.Text = b
+    
+        End With
+        Exit Sub
+        
+    End If
+    
+    If sel_1 Is Nothing And sel_2 Is Nothing Then Exit Sub
+    If idaHwndA = 0 And idaHwndB = 0 Then Exit Sub
+    
+    If Not sel_1 Is Nothing Then funcA = sel_1.ListSubItems(2)
+    If Not sel_2 Is Nothing Then funcB = sel_2.ListSubItems(2)
+    
+    With idaClient
+        If idaHwndA <> 0 Then
+             .ActiveIDA = idaHwndA
+             va = .FuncVAByName(funcA)
+             If va <> 0 Then a = .Decompile(va)
+        End If
+        
+        If idaHwndB <> 0 Then
+             .ActiveIDA = idaHwndB
+             va = .FuncVAByName(funcB)
+             If va <> 0 Then b = .Decompile(va)
+        End If
+        
+    End With
+    
+    If Len(a) > 0 Then txtA.Text = a
+    If Len(b) > 0 Then txtB.Text = b
+    
+        
+    
+End Sub
+
+Private Sub mnuReconnectIDASrvr_Click()
+
+    idaClient.EnumIDAWindows
+    idaHwndA = idaClient.FindHwndForIDB(fullIDB_A)
+    idaHwndB = idaClient.FindHwndForIDB(fullIDB_B)
+    
+    MsgBox "Connected to IDA for: " & fullIDB_A & "      " & IIf(idaHwndA = 0, "FAIL", "OK") & vbCrLf & _
+           "Connected to IDA for: " & fullIDB_B & "      " & IIf(idaHwndB = 0, "FAIL", "OK") & vbCrLf & vbCrLf & _
+           "If you are having problems make sure you manually installed the IDASrvr.plw" & vbCrLf & _
+           "plugin to IDA and that you have the correct databases already open.", vbInformation
+            
 End Sub
 
 Private Sub mnuRescanCurrent_Click()
@@ -844,17 +1087,29 @@ Private Sub Form_Resize()
     lv1.Width = txtA.Width
     lv2.Width = txtB.Width
     lv2.left = txtB.left
+    lblDBA.Width = lv1.Width
+    lblDBB.Width = lv2.Width
     
     lv1.ColumnHeaders(lv1.ColumnHeaders.Count - 1).Width = lv1.Width - lv1.ColumnHeaders(lv1.ColumnHeaders.Count - 1).left - 100 - lv1.ColumnHeaders(lv1.ColumnHeaders.Count).Width
     lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).Width = lv2.Width - lv2.ColumnHeaders(lv2.ColumnHeaders.Count - 1).left - 100 - lv2.ColumnHeaders(lv2.ColumnHeaders.Count).Width
     
     Frame1.Width = Me.Width - 120
+    splitter.Width = Frame1.Width
     'txtReport.Width = Frame1.Width - 120
     lvExact.Width = Frame1.Width - 120
     pb.Width = Me.Width - pb.left - 200
     
     Command1(1).left = txtB.left - Command1(1).Width
     Command1(0).left = txtB.left
+    
+    If splitter.Top < lv1.Top + 1000 Then
+        splitter.Top = lv1.Top + 1000
+        DoMove
+    ElseIf splitter.Top > Me.Height - (Frame1.Height * 1.5) Then
+        splitter.Top = Me.Height - (Frame1.Height * 1.5)
+        DoMove
+    End If
+    
     
 End Sub
 
@@ -994,10 +1249,15 @@ End Function
 Private Sub Form_Load()
     Dim cmd As String
     
+    idaClient.Listen Me.hwnd
     mnuPopup.Visible = False
     mnuPopupRename.Visible = False
+    mnuLVPopup.Visible = False
     frmConfigMatches.Visible = False
     FormPos Me, True
+    splitter.Top = GetSetting("IDACompare", "settings", "SplitterTop", splitter.Top)
+    DoMove
+    Form_Resize
     
     LoadChkSettings
     optInternalMatchEngine.value = GetSetting("IDACompare", "settings", "optInternalMatchEngine", True)
@@ -1010,7 +1270,7 @@ Private Sub Form_Load()
                         "to your needs without having to have VB or recompile"
            
     cmd = Command
-    If isIDE() Then cmd = App.path & "\..\mydoom_example.mdb"
+    'If isIDE() Then cmd = App.path & "\..\mydoom_example.mdb"
     
     If Len(cmd) > 0 Then
         currentMDB = Replace(cmd, """", Empty)
@@ -1068,9 +1328,13 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
     
     If mode = compare1 Then
         idb_a = ado("Select top 1 idb from " & tbl)!idb
+        fullIDB_A = idb_a
+        If Len(idb_a) > 12 Then idb_a = Mid(idb_a, 1, 10) & "..."
         lblDBA = "1: " & idb_a
     ElseIf mode = compare2 Then
         idb_b = ado("Select top 1 idb from " & tbl)!idb
+        fullIDB_B = idb_b
+        If Len(idb_b) > 12 Then idb_b = Mid(idb_b, 1, 10) & "..."
         lblDBB = "2: " & idb_b
     End If
     
@@ -1110,8 +1374,8 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
             c.index = rs!index
 
             li.Tag = c.autoid
-            li.Text = rs!index
-            li.SubItems(1) = c.Length
+            li.Text = pad(rs!index, 3)
+            li.SubItems(1) = pad(c.Length)
             li.SubItems(2) = c.Name
             li.SubItems(3) = c.mCRC
 
@@ -1450,7 +1714,7 @@ End Function
 Private Sub mnuLoadDatabase_click()
     Dim pth As String
     cmndlg1.SetCustomFilter "Access Databases", "*.mdb"
-    pth = cmndlg1.OpenDialog(CustomFilter)
+    pth = cmndlg1.OpenDialog(CustomFilter, , , Me.hwnd)
     If Len(pth) = 0 Then Exit Sub
     currentMDB = pth
     LoadDataBase currentMDB
@@ -1569,30 +1833,29 @@ Sub LoadDataBase(pth As String)
     
     txtReport = Join(r, vbCrLf) & vbCrLf & Join(stats, vbCrLf)
     
+    idaClient.EnumIDAWindows
+    idaHwndA = idaClient.FindHwndForIDB(fullIDB_A)
+    idaHwndB = idaClient.FindHwndForIDB(fullIDB_B)
+    mnuDecompileSelected.Enabled = idaClient.DecompilerActive(idaHwndA)
+        
     Unload sc(1)
     
 End Sub
  
-
-
-
-
-
-
-
-
-
-
-
-
-
 Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     cn.Close
     FormPos Me, True, True
     LoadChkSettings False
+    SaveSetting "IDACompare", "settings", "SplitterTop", splitter.Top
     SaveSetting "IDACompare", "settings", "optInternalMatchEngine", optInternalMatchEngine.value
+    SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
     Set cmndlg1 = Nothing
+    
+    Dim f
+    For Each f In Forms
+        Unload f
+    Next
 End Sub
 
 Private Sub lblTransform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
@@ -1625,7 +1888,9 @@ Public Sub lv1_ItemClick(ByVal Item As MSComctlLib.ListItem)
         cmdBreakMatch.Enabled = False
     End If
     
-    
+    If idaHwndA <> 0 Then
+        idaClient.JumpName Item.SubItems(2), idaHwndA
+    End If
     
     Me.caption = "Function list 1 " & lv1.ListItems.Count & " entries"
 End Sub
@@ -1654,6 +1919,10 @@ Public Sub lv2_ItemClick(ByVal Item As MSComctlLib.ListItem)
         cmdBreakMatch.Enabled = False
     End If
     
+    If idaHwndB <> 0 Then
+        idaClient.JumpName Item.SubItems(2), idaHwndB
+    End If
+    
     Me.caption = "Function list 1 " & lv2.ListItems.Count & " entries"
     
 End Sub
@@ -1663,6 +1932,10 @@ End Sub
 Private Sub lvExact_ItemClick(ByVal Item As MSComctlLib.ListItem)
    Dim x, asmA As String, asmB As String
    On Error Resume Next
+   
+   If Not sel_exact Is Nothing Then
+        If sel_exact = Item Then Exit Sub
+   End If
    
    x = Split(Item.Tag, ",")
    asmA = ado("Select disasm from a where autoid=" & x(0))!disasm
@@ -1678,7 +1951,35 @@ Private Sub lvExact_ItemClick(ByVal Item As MSComctlLib.ListItem)
    cmdManualMatch.Enabled = False
    cmdBreakMatch.Enabled = True
     
+    If idaHwndA <> 0 Then
+        idaClient.JumpName Item.Text, idaHwndA
+    End If
+    
+    If idaHwndB <> 0 Then
+        idaClient.JumpName Item.SubItems(1), idaHwndB
+    End If
+    
 End Sub
+
+Function FindMatchAutoID(funcName As String, isTableA As Boolean) As Long
+    
+    Dim li As ListItem
+    Dim fn As String
+    Dim x
+    
+    On Error Resume Next
+    
+    For Each li In lvExact.ListItems
+        If isTableA Then fn = li.Text Else fn = li.SubItems(1)
+        If fn = funcName Then
+            x = Split(li.Tag, ",")
+            FindMatchAutoID = IIf(isTableA, x(0), x(1))
+            Exit Function
+        End If
+    Next
+    
+    
+End Function
 
 Sub GlobalResets()
   
@@ -1847,6 +2148,21 @@ helpmsg:
 End Sub
 
  
+Private Sub mnuTopCopyFuncNames_Click()
+    On Error Resume Next
+    Dim li As ListItem
+    Dim tmp As String
+    
+    If selLV Is Nothing Then Exit Sub
+    
+    For Each li In selLV.ListItems
+        tmp = tmp & li.SubItems(2) & vbCrLf
+    Next
+    
+    Clipboard.Clear
+    Clipboard.SetText tmp
+End Sub
+
 Private Sub mnuViewStats_Click()
     frmDataViewer.ShowData txtReport
 End Sub

@@ -10,6 +10,7 @@ OutputDir=./
 
 [Files]
 Source: ./IDA_Compare.plw; DestDir: {app}
+Source: ./IDASrvr.plw; DestDir: {app}
 Source: ./install_plw.bat; DestDir: {app}
 Source: ./\vb src\Module1.bas; DestDir: {app}\vb src
 Source: ./\vb src\frmPluginSample.frm; DestDir: {app}\vb src
@@ -45,11 +46,12 @@ Source: ./dependancy\mscomctl.ocx; DestDir: {win}; Flags: uninsneveruninstall re
 Source: ./dependancy\msscript.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 Source: ./dependancy\richtx32.ocx; DestDir: {win}; Flags: uninsneveruninstall regserver
 Source: ./dependancy\vbDevKit.dll; DestDir: {win}; Flags: uninsneveruninstall regserver
+Source: ./dependancy\IDAClientLib.dll; DestDir: {app}; Flags: regserver
 Source: WinMerge_Plugin\README.txt; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMergeScript.cls; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMerge_IDACompare.vbp; DestDir: {app}\WinMerge_Plugin\
 Source: WinMerge_Plugin\WinMerge_IDACompare.vbw; DestDir: {app}\WinMerge_Plugin\
-Source: WinMerge_Plugin\wmIDACompare.dll; DestDir: {app}\WinMerge_Plugin\  Flags: regserver
+Source: WinMerge_Plugin\wmIDACompare.dll; DestDir: {app}\WinMerge_Plugin\;  Flags: regserver
 
 
 [Dirs]
