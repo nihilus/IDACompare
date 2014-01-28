@@ -6,7 +6,6 @@ WinMerge is a free open source diffing utility available from winmerge.org
 
 In order to use this plugin, you will have to:
 
-
 1) enabled plugins: Plugins -> List -> enable checkbox
 2) after the file diff, run it manually Plugins-> Prediffer -> wmIDACompare.dll
 

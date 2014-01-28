@@ -36,40 +36,40 @@ Begin VB.Form Form1
       Height          =   3675
       Left            =   1860
       ScaleHeight     =   3615
-      ScaleWidth      =   5865
+      ScaleWidth      =   6735
       TabIndex        =   12
       Top             =   720
-      Width           =   5925
+      Width           =   6795
       Begin VB.Frame frmConfigMatchesInner 
          Caption         =   " Configure Match Engine "
-         BeginProperty Font 
-            Name            =   "MS Sans Serif"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
          Height          =   3465
          Left            =   60
          TabIndex        =   13
          Top             =   60
-         Width           =   5715
+         Width           =   6585
          Begin VB.Frame Frame2 
             Caption         =   " WinMerge Plugin Config "
             Height          =   1605
             Left            =   1830
             TabIndex        =   28
             Top             =   420
-            Width           =   3795
+            Width           =   4725
+            Begin VB.OptionButton optWinMergeFilter 
+               Caption         =   "Complex Signature"
+               Height          =   435
+               Index           =   3
+               Left            =   240
+               TabIndex        =   32
+               Top             =   1050
+               Width           =   2415
+            End
             Begin VB.OptionButton optWinMergeFilter 
                Caption         =   "Debug UI"
                Height          =   315
                Index           =   2
-               Left            =   240
+               Left            =   2880
                TabIndex        =   31
-               Top             =   1110
+               Top             =   330
                Width           =   1455
             End
             Begin VB.OptionButton optWinMergeFilter 
@@ -82,13 +82,13 @@ Begin VB.Form Form1
                Width           =   1455
             End
             Begin VB.OptionButton optWinMergeFilter 
-               Caption         =   "Agressive"
+               Caption         =   "Basic"
                Height          =   315
                Index           =   0
                Left            =   240
                TabIndex        =   29
                Top             =   330
-               Width           =   1455
+               Width           =   1005
             End
          End
          Begin VB.CheckBox chkExternalMatchScript 
@@ -248,9 +248,9 @@ Begin VB.Form Form1
                Strikethrough   =   0   'False
             EndProperty
             Height          =   375
-            Left            =   5040
+            Left            =   5970
             TabIndex        =   21
-            Top             =   60
+            Top             =   30
             Width           =   615
          End
       End
@@ -524,7 +524,6 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":0000
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -546,7 +545,6 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":007C
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -596,14 +594,14 @@ Begin VB.Form Form1
    End
    Begin VB.Menu mnuTools 
       Caption         =   "Tools"
-      Begin VB.Menu mnuLoadLast 
-         Caption         =   "Load Last DataBase"
-      End
       Begin VB.Menu mnuLoadDatabase 
-         Caption         =   "Load New DataBase"
+         Caption         =   "Load New"
       End
       Begin VB.Menu mnuRescanCurrent 
-         Caption         =   "Rescan Current Database"
+         Caption         =   "Rescan Current DB"
+      End
+      Begin VB.Menu mnuLoadLast 
+         Caption         =   "Open Last"
       End
       Begin VB.Menu mnuSpacer1 
          Caption         =   "-"
@@ -625,6 +623,9 @@ Begin VB.Form Form1
       End
       Begin VB.Menu mnuDecompileSelected 
          Caption         =   "Decompile Selected Functions"
+      End
+      Begin VB.Menu mnuSpacer3 
+         Caption         =   "-"
       End
       Begin VB.Menu mnuCurExportForDiff 
          Caption         =   "WinMerge - Diff Disasm "
@@ -801,7 +802,7 @@ Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single,
 
     If Button = 1 Then 'The mouse is down
         If Capturing = False Then
-            splitter.ZOrder
+            'splitter.ZOrder
             SetCapture splitter.hwnd
             Capturing = True
         End If
@@ -825,13 +826,9 @@ End Sub
 
 Private Sub DoMove()
     On Error Resume Next
-    Dim tw As Integer 'Twips Width
-    Dim th As Integer 'Twips Height
-    tw = Screen.TwipsPerPixelX
-    th = Screen.TwipsPerPixelY
     Const buf = 30
     txtA.Top = splitter.Top + splitter.Height + buf
-    txtA.Height = Me.Height - txtA.Top - (th * 60)
+    txtA.Height = Frame1.Top - txtA.Top
     txtB.Top = txtA.Top
     txtB.Height = txtA.Height
     lv1.Height = splitter.Top - lv1.Top - buf
@@ -1119,6 +1116,7 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub mnuCfgEngine_Click()
+    frmConfigMatches.ZOrder
     frmConfigMatches.Visible = True
 End Sub
 
@@ -2090,6 +2088,15 @@ Private Sub mnuCurExportForDiff_Click()
     writeFile a, txtA.Text
     writeFile b, txtB.Text
     Shell exe & " " & a & " " & b, vbNormalFocus
+     
+    'To active prediffer automatically send the following keys:
+    '(did i mention how much i love vb6 for its simplicity? :)
+    AppActivate "WinMerge - [a.idacompare - b.idacompare]"
+    SendKeys "%p"         'alt-p
+    SendKeys "{DOWN 4}"   'down 4
+    SendKeys "{RIGHT}"    'right 1
+    SendKeys "{DOWN 2}"   'down two
+    SendKeys vbCr         'return
     
     Exit Sub
 hell:

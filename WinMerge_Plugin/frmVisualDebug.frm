@@ -9,6 +9,14 @@ Begin VB.Form frmVisualDebug
    ScaleHeight     =   8670
    ScaleWidth      =   13110
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton cmdMoreComplex 
+      Caption         =   "More Complex Signature"
+      Height          =   405
+      Left            =   4260
+      TabIndex        =   7
+      Top             =   8070
+      Width           =   2175
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "Accept and continue"
       Height          =   435
@@ -20,7 +28,7 @@ Begin VB.Form frmVisualDebug
    Begin VB.CommandButton Command2 
       Caption         =   "Less Agressive / Signature"
       Height          =   405
-      Left            =   4020
+      Left            =   1680
       TabIndex        =   4
       Top             =   8070
       Width           =   2295
@@ -28,7 +36,7 @@ Begin VB.Form frmVisualDebug
    Begin VB.CommandButton Command1 
       Caption         =   "Agressive / basic"
       Height          =   405
-      Left            =   2250
+      Left            =   120
       TabIndex        =   3
       Top             =   8070
       Width           =   1365
@@ -104,6 +112,10 @@ Function DebugFilter(bufIn As String, c As WinMergeScript) As String
     DebugFilter = txtOut.text
     Unload Me
 End Function
+
+Private Sub cmdMoreComplex_Click()
+    txtOut = parent.ComplexSignature(txtIn)
+End Sub
 
 Private Sub Command1_Click()
     txtOut = parent.Aggressive(txtIn, False, True)

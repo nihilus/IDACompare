@@ -1,13 +1,7 @@
 
  integrate compare UI with IDASrvr so right click
     rename functions
-    decompile function
-    jump to function
     if highlight sub receives null function, create new for constant bolding..
 
-document nuances:
-  p keypress in any listview on main form brings up profile function dialog
-  you can drag and drop a mdb ontop the main form to load it, 
-      (but only if you find a section of form not covered by a another control..)
 
  

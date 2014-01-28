@@ -64,6 +64,7 @@ Public Function PrediffBufferW(ByRef text As String, ByRef size As Long, ByRef b
       Case 0: text = Aggressive(text, False, True)
       Case 1: text = LessAggressive(text)
       Case 2: text = frmVisualDebug.DebugFilter(text, Me)
+      Case 3: text = ComplexSignature(text)
       Case Default: MsgBox "An unknown default filter is set for IDACompare Winmerge plugin? Index: " & defaultFilter
   End Select
   
@@ -165,6 +166,124 @@ Public Function LessAggressive(text As String) As String
     
 End Function
 
+Public Function ComplexSignature(text As String) As String
+
+    Dim tmp() As String
+    Dim i As Long, x, cmd, c, r
+    Const stdJmps As Boolean = True
+    Const stripArgs As Boolean = True
+    
+    Dim baseCmd As String
+    Dim a As Long
+    
+    tmp = Split(text, vbCrLf)
+    
+    For i = 0 To UBound(tmp)
+        If Right(tmp(i), 1) = ":" Then
+            'its a label strip after the _ if it has one
+            a = InStr(tmp(i), "_")
+            If a < 1 Then
+                tmp(i) = Empty
+            Else
+                tmp(i) = Mid(tmp(i), 1, a) 'at least we leave a label was here marker better than blank space..
+            End If
+        Else
+            tmp(i) = Replace(tmp(i), vbTab, " ")
+            
+            While InStr(tmp(i), "  ")
+                tmp(i) = Replace(tmp(i), "  ", " ")
+            Wend
+                
+            tmp(i) = Trim(tmp(i))
+            
+            If Len(tmp(i)) > 0 Then
+                cmd = Split(tmp(i), " ")
+                baseCmd = cmd(0)
+                 
+                'now lets build a command signature based on some markers that dont change..
+                For Each c In cmd
+                     baseCmd = baseCmd & stdReg(c)
+                     baseCmd = baseCmd & PointerSignature(c)
+                     If ExtractConstant(c, x) Then baseCmd = baseCmd & x
+                     If c = ";" Then Exit For 'we process comments next..
+                Next
+
+                x = InStr(tmp(i), ";")
+                If x > 0 Then baseCmd = baseCmd & Mid(tmp(i), x) 'append on any automatic comment IDA included
+                tmp(i) = Trim(baseCmd)
+                
+            End If
+            
+        End If
+    Next
+
+    ComplexSignature = Join(tmp, vbCrLf)
+End Function
+
+Private Function PointerSignature(ByVal cmd As String)
+
+    If Len(cmd) = 0 Then Exit Function
+    
+    If InStr(cmd, "[") > 0 Then PointerSignature = PointerSignature & "["
+    If InStr(cmd, "+") > 0 Then PointerSignature = PointerSignature & "+"
+    If InStr(cmd, "-") > 0 Then PointerSignature = PointerSignature & "-"
+    If InStr(cmd, "*") > 0 Then PointerSignature = PointerSignature & "*"
+    If InStr(cmd, "]") > 0 Then PointerSignature = PointerSignature & "]"
+    
+    If Len(PointerSignature) > 0 Then PointerSignature = " " & PointerSignature
+    
+End Function
+
+Private Function stdReg(ByVal cmd As String)
+    
+    Dim reg32() As String, reg16() As String, reg8() As String, stack() As String, r
+    Dim hasComma As Boolean
+    
+    If Len(cmd) = 0 Then Exit Function
+    
+    cmd = LCase(cmd)
+    
+    If Right(cmd, 1) = "," Then
+        hasComma = True
+        cmd = Mid(cmd, 1, Len(cmd) - 1)
+    End If
+    
+    stack = Split("esp,ebp", ",")
+    reg32 = Split("eax,ebx,ecx,edx,esi,edi", ",")
+    reg16 = Split("ax,bx,cx,dx,si,di", ",")
+    reg8 = Split("al,ah,bl,bh,cl,ch,dl,dh", ",")
+    
+    For Each r In stack
+        If cmd = r Then
+            stdReg = " " & r & IIf(hasComma, ",", Empty)
+            Exit Function
+        End If
+    Next
+    
+    For Each r In reg32
+        If cmd = r Then
+            stdReg = " reg32" & IIf(hasComma, ",", Empty)
+            Exit Function
+        End If
+    Next
+    
+    For Each r In reg16
+        If cmd = r Then
+            stdReg = " reg16" & IIf(hasComma, ",", Empty)
+            Exit Function
+        End If
+    Next
+    
+    For Each r In reg8
+        If cmd = r Then
+            stdReg = " reg8" & IIf(hasComma, ",", Empty)
+            Exit Function
+        End If
+    Next
+    
+    
+End Function
+
 Private Function ExtractConstant(ByVal asm, ByRef ConstVal) As Boolean
     Dim tmp() As String
     Dim i As Long
@@ -190,8 +309,9 @@ Private Function ExtractConstant(ByVal asm, ByRef ConstVal) As Boolean
     tmp = Split(asm, " ")
    
     tmp(i) = Trim(tmp(UBound(tmp)))
-    If Right(tmp(i), 1) = "h" And Len(tmp(i)) > 3 Then
-        ConstVal = tmp(i)
+    If Right(tmp(i), 1) = "h" And Len(tmp(i)) > 3 And tmp(i) <> "push" Then
+        ConstVal = " " & tmp(i)
+        Debug.Print "const found: " & asm & " -> " & tmp(i)
         ExtractConstant = True
     End If
     
