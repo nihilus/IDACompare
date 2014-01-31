@@ -146,7 +146,7 @@ Public Function LessAggressive(text As String) As String
                 cmd = Split(tmp(i), " ")
                 baseCmd = cmd(0)
                  
-                'now lets build a command signature based on some markers that dont change..
+                'now lets reduce the command to the base elements it contains
                 If InStr(tmp(i), "[") > 0 Then baseCmd = baseCmd & "[]"
                 If InStr(tmp(i), "+") > 0 Then baseCmd = baseCmd & "+"
                 If InStr(tmp(i), "-") > 0 Then baseCmd = baseCmd & "-"
@@ -200,7 +200,8 @@ Public Function ComplexSignature(text As String) As String
                 cmd = Split(tmp(i), " ")
                 baseCmd = cmd(0)
                  
-                'now lets build a command signature based on some markers that dont change..
+                'now lets reduce the command to the base elements it contains (try to achieve generic asm menumonic format for instruction)
+                'eg. mov reg32, reg32  or  mov reg32, [] etc..
                 For Each c In cmd
                      baseCmd = baseCmd & stdReg(c)
                      baseCmd = baseCmd & PointerSignature(c)
@@ -316,30 +317,4 @@ Private Function ExtractConstant(ByVal asm, ByRef ConstVal) As Boolean
     End If
     
 End Function
-
-
-'example
-'  sTemp = ""
-'  bChanged = False
-'  bLineHasStarted = True
-'  For i = 0 To size - 1 'For all chars...
-'    sChar = Mid(text, i + 1, 1)
-'    Select Case sChar
-'      Case "N", "n", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" 'N or number...
-'        If (bLineHasStarted = True) Then 'If line has started...
-'          sChar = ""
-'          bChanged = True
-'        End If
-'      Case vbCr, vbLf 'EOL...
-'        bLineHasStarted = True
-'      Case Else
-'        bLineHasStarted = False
-'    End Select
-'    sTemp = sTemp & sChar
-'  Next i
-'
-'  If (bChanged = True) Then 'If text has changed...
-'    text = sTemp
-'    size = Len(sTemp)
-'  End If
 

@@ -112,9 +112,16 @@ Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Lo
 Public Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 Public Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
+Public Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 
-
-
+Function isIde() As Boolean
+    On Error GoTo hell
+    Debug.Print 1 / 0
+    isIde = False
+    Exit Function
+hell:
+    isIde = True
+End Function
 
 Function GetFName(offset As Long) As String
     Dim buf As String
@@ -188,7 +195,7 @@ Function GetAsmRange(start As Long, leng As Long) As String
 End Function
 
 Function HexDumpBytes(start As Long, leng As Long) As String
-    Dim buf() As Byte, i As Integer, x As String
+    Dim buf() As Byte, i As Long, x As String
     
     ReDim buf(1 To leng)
     GetBytes start, buf(1), leng

@@ -353,13 +353,13 @@ Private Sub cmdImportNames_Click()
         idbb = LCase(cn.Execute("Select top 1 idb from b")!idb)
         
         If idba = curidb And LCase(idba) = LCase(idbb) Then
-            Dim X As VbMsgBoxResult
+            Dim x As VbMsgBoxResult
             
-            X = MsgBox("Both disassemblies in this database have the same filename." & _
+            x = MsgBox("Both disassemblies in this database have the same filename." & _
                         vbCrLf & vbCrLf & "Would you like to import the names from Snapshot 1?", vbYesNoCancel)
                         
-            If X = vbCancel Then Exit Sub
-            activeTable = IIf(X = vbYes, "a", "b")
+            If x = vbCancel Then Exit Sub
+            activeTable = IIf(x = vbYes, "a", "b")
             
         ElseIf idba = curidb Then
             activeTable = "a"
@@ -476,6 +476,13 @@ Private Sub Form_Load()
     Dim cnt As Long, i As Long
     Dim startPos As Long, endPos As Long
  
+'    Dim plw As String
+'
+'    If isIde() Then
+'        plw = App.path & "\..\ida_compare.plw"
+'        If FileExists(plw) Then LoadLibrary plw
+'    End If
+    
     Me.Move (Screen.Width / 2) - (Me.Width / 2), _
             (Screen.Height / 2) - (Me.Height / 2)
     
@@ -557,21 +564,21 @@ Sub DoExport(mode As ExportModes)
     
         If mode = SignatureMode And Not li.Selected Then GoTo nextOne
         
-        leng = li.SubItems(3)
-        start = CLng("&h" & li.SubItems(1))
-        bytes = HexDumpBytes(start, leng)
-        asm = GetAsmRange(start, leng)
-        Insert cn, tbl, "idb,bytes,disasm,index,leng,fname,startEA", idb, bytes, asm, li.Text, leng, li.SubItems(4), start
+1        leng = li.SubItems(3)
+2        start = CLng("&h" & li.SubItems(1))
+3        bytes = HexDumpBytes(start, leng)
+4        asm = GetAsmRange(start, leng)
+5        Insert cn, tbl, "idb,bytes,disasm,index,leng,fname,startEA", idb, bytes, asm, li.Text, leng, li.SubItems(4), start
 
 nextOne:
-        pb.value = pb.value + 1
+6        pb.value = pb.value + 1
     Next
 
     pb.value = 0
     If mode <> TmpMode Then MsgBox "Functions saved to mdb", vbInformation
     
 Exit Sub
-hell: MsgBox Err.Description
+hell: MsgBox "Error in DoExport: Line: " & Erl() & " Description: " & Err.Description
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -580,7 +587,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Set dlg = Nothing
 End Sub
 
-Private Sub lv_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lv_MouseUp(Button As Integer, Shift As Integer, x As Single, Y As Single)
     If Button = 2 Then PopupMenu mnuPopup
 End Sub
 
@@ -601,6 +608,6 @@ top:
     
 End Sub
 
-Private Sub txtDB_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub txtDB_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
     txtDB = Data.Files(1)
 End Sub

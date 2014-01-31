@@ -1,7 +1,7 @@
 VERSION 5.00
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
 Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
-Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.ocx"
+Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
    ClientHeight    =   9195
@@ -790,6 +790,41 @@ Private Declare Function SetCapture Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
 
 
+'Private Sub frmConfigMatchesInner_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+'    If Capturing Then
+'        ReleaseCapture
+'        Capturing = False
+'    End If
+'End Sub
+'
+'Private Function CfgMoveOk(X&, Y&) As Boolean 'Put in any limiters you desire
+'    CfgMoveOk = False
+'    If Y > 0 And Y < Me.Height - Frame1.Height And _
+'       X > 0 And X < Me.Width - frmConfigMatches.Width _
+'    Then
+'        CfgMoveOk = True
+'    End If
+'End Function
+'
+'Private Sub frmConfigMatchesInner_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+'    Dim x1 As Long, y1 As Long
+'
+'    If Button = 1 Then 'The mouse is down
+'        If Capturing = False Then
+'            SetCapture frmConfigMatches.hwnd
+'            Capturing = True
+'        End If
+'        With frmConfigMatches
+'            y1 = .Top + Y
+'            x1 = .left + X
+'            If CfgMoveOk(x1, y1) Then
+'                .Top = y1
+'                .left = x1
+'            End If
+'        End With
+'    End If
+'
+'End Sub
 
 Private Sub optWinMergeFilter_Click(index As Integer)
     SaveSetting "winmerge", "settings", "defaultFilter", index
@@ -797,7 +832,7 @@ End Sub
 
 'splitter code
 '------------------------------------------------
-Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim a1&
 
     If Button = 1 Then 'The mouse is down
@@ -807,7 +842,7 @@ Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single,
             Capturing = True
         End If
         With splitter
-            a1 = .Top + y
+            a1 = .Top + Y
             If MoveOk(a1) Then
                 .Top = a1
             End If
@@ -815,7 +850,7 @@ Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single,
     End If
 End Sub
 
-Private Sub splitter_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub splitter_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Capturing Then
         ReleaseCapture
         Capturing = False
@@ -836,9 +871,9 @@ Private Sub DoMove()
 End Sub
 
 
-Private Function MoveOk(y&) As Boolean  'Put in any limiters you desire
+Private Function MoveOk(Y&) As Boolean  'Put in any limiters you desire
     MoveOk = False
-    If y > lv1.Top + 1000 And y < Me.Height - (Frame1.Height * 1.5) Then
+    If Y > lv1.Top + 1000 And Y < Me.Height - (Frame1.Height * 1.5) Then
         MoveOk = True
     End If
 End Function
@@ -850,14 +885,14 @@ End Function
  
 Private Sub cmdBreakMatch_Click()
    
-   Dim x, li As ListItem
+   Dim X, li As ListItem
    On Error Resume Next
    
    If sel_exact Is Nothing Then Exit Sub
    
-   x = Split(sel_exact.Tag, ",")
-   Set c = GetClassFromAutoID(a, x(0))
-   Set h = GetClassFromAutoID(b, x(1))
+   X = Split(sel_exact.Tag, ",")
+   Set c = GetClassFromAutoID(a, X(0))
+   Set h = GetClassFromAutoID(b, X(1))
    
    Set li = lv1.ListItems.Add(, "id:" & c.autoid)
    li.Tag = c.autoid
@@ -879,7 +914,7 @@ Private Sub cmdBreakMatch_Click()
             
 End Sub
 
-Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
     On Error Resume Next
     Dim f As String
     f = data.Files(1)
@@ -889,12 +924,12 @@ Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integ
     End If
 End Sub
 
-Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set selLV = lv1
     If Button = 2 Then PopupMenu mnuLVPopup
 End Sub
 
-Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Set selLV = lv2
     If Button = 2 Then PopupMenu mnuLVPopup
 End Sub
@@ -1116,8 +1151,16 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub mnuCfgEngine_Click()
-    frmConfigMatches.ZOrder
-    frmConfigMatches.Visible = True
+    
+    On Error Resume Next
+    
+    With frmConfigMatches
+        .ZOrder
+        .left = Me.Width / 2 - .Width / 2
+        .Top = Me.Height / 2 - .Height / 2
+        .Visible = True
+    End With
+    
 End Sub
 
 Private Sub lblCloseConfig_Click()
@@ -1145,22 +1188,22 @@ Private Sub lv2_DblClick()
 End Sub
 
 Private Sub lvExact_DblClick()
-   Dim x
+   Dim X
    On Error Resume Next
    Dim f As frmProfile
    If sel_exact Is Nothing Then Exit Sub
    Set f = New frmProfile
-   x = Split(sel_exact.Tag, ",")
-   Set c = GetClassFromAutoID(a, x(0))
-   Set h = GetClassFromAutoID(b, x(1))
+   X = Split(sel_exact.Tag, ",")
+   Set c = GetClassFromAutoID(a, X(0))
+   Set h = GetClassFromAutoID(b, X(1))
    f.ShowProfile c, h
 End Sub
 
-Private Function GetClassFromAutoID(x As Collection, autoid) As CFunction
-    Dim y As CFunction
-    For Each y In x
-        If y.autoid = autoid Then
-            Set GetClassFromAutoID = y
+Private Function GetClassFromAutoID(X As Collection, autoid) As CFunction
+    Dim Y As CFunction
+    For Each Y In X
+        If Y.autoid = autoid Then
+            Set GetClassFromAutoID = Y
             Exit Function
         End If
     Next
@@ -1584,7 +1627,7 @@ Function APIMatch2() As Long
 End Function
 
 Function ConstMatch() As Long
-    Dim x, j
+    Dim X, j
     
       Dim ret As Long
       pb.value = 0
@@ -1596,8 +1639,8 @@ Function ConstMatch() As Long
                      If isWithin(3, c.Constants.Count, h.Constants.Count, 1) And _
                           isWithin(60, c.Length, h.Length) Then
                                 j = 0
-                                For Each x In c.Constants
-                                   If h.ConstantExists(x) Then j = j + 1
+                                For Each X In c.Constants
+                                   If h.ConstantExists(X) Then j = j + 1
                                 Next
                                 
                                 If isWithin(3, c.Constants.Count, j, 2) Then
@@ -1861,7 +1904,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Next
 End Sub
 
-Private Sub lblTransform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lblTransform_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     PopupMenu mnuPopupRename
 End Sub
 
@@ -1933,16 +1976,16 @@ End Sub
 
 
 Private Sub lvExact_ItemClick(ByVal Item As MSComctlLib.ListItem)
-   Dim x, asmA As String, asmB As String
+   Dim X, asmA As String, asmB As String
    On Error Resume Next
    
    If Not sel_exact Is Nothing Then
         If sel_exact = Item Then Exit Sub
    End If
    
-   x = Split(Item.Tag, ",")
-   asmA = ado("Select disasm from a where autoid=" & x(0))!disasm
-   asmB = ado("Select disasm from b where autoid=" & x(1))!disasm
+   X = Split(Item.Tag, ",")
+   asmA = ado("Select disasm from a where autoid=" & X(0))!disasm
+   asmB = ado("Select disasm from b where autoid=" & X(1))!disasm
    
    'Set c = a(Item.ListSubItems(3))
    rtfHighlightAsm asmA, Nothing, txtA
@@ -1968,15 +2011,15 @@ Function FindMatchAutoID(funcName As String, isTableA As Boolean) As Long
     
     Dim li As ListItem
     Dim fn As String
-    Dim x
+    Dim X
     
     On Error Resume Next
     
     For Each li In lvExact.ListItems
         If isTableA Then fn = li.Text Else fn = li.SubItems(1)
         If fn = funcName Then
-            x = Split(li.Tag, ",")
-            FindMatchAutoID = IIf(isTableA, x(0), x(1))
+            X = Split(li.Tag, ",")
+            FindMatchAutoID = IIf(isTableA, X(0), X(1))
             Exit Function
         End If
     Next
@@ -2001,7 +2044,7 @@ Sub GlobalResets()
     
 End Sub
 
-Private Sub lvExact_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub lvExact_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Button = 2 Then PopupMenu mnuPopup
 End Sub
 
