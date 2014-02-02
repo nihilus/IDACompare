@@ -446,7 +446,7 @@ Private Sub Command1_Click()
         Exit Sub
     End If
     
-    pth = dlg.SaveDialog(CustomFilter)
+    pth = dlg.SaveDialog(CustomFilter, , "Save new DB as..", , Me.hwnd)
     If Len(pth) = 0 Then Exit Sub
     If LCase(VBA.Right(pth, 4)) <> ".mdb" Then pth = pth & ".mdb"
     
@@ -463,7 +463,7 @@ End Sub
 
 Private Sub Command2_Click()
     Dim pth As String
-    pth = dlg.OpenDialog(CustomFilter)
+    pth = dlg.OpenDialog(CustomFilter, , "Select existing db to export to", Me.hwnd)
     If Len(pth) = 0 Then Exit Sub
     exportedA = False
     exportedB = False
@@ -559,6 +559,7 @@ Sub DoExport(mode As ExportModes)
     pb.Max = lv.ListItems.Count
     
     idb = FileNameFromPath(loadedFile)
+    If Len(idb) = 0 Then idb = "sample" 'maybe they loaded a lib file?
     
     For Each li In lv.ListItems
     

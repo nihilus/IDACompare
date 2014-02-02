@@ -47,15 +47,23 @@ Begin VB.Form Form1
          TabIndex        =   13
          Top             =   60
          Width           =   6585
+         Begin VB.CheckBox chkEnforceMinSize 
+            Caption         =   "Ignore functions < 30 Bytes"
+            Height          =   285
+            Left            =   2820
+            TabIndex        =   33
+            Top             =   2190
+            Width           =   3675
+         End
          Begin VB.Frame Frame2 
-            Caption         =   " WinMerge Plugin Config "
+            Caption         =   " WinMerge Plugin Match Engine"
             Height          =   1605
-            Left            =   1830
+            Left            =   1800
             TabIndex        =   28
             Top             =   420
             Width           =   4725
             Begin VB.OptionButton optWinMergeFilter 
-               Caption         =   "Complex Signature"
+               Caption         =   "Advanced"
                Height          =   435
                Index           =   3
                Left            =   240
@@ -64,22 +72,22 @@ Begin VB.Form Form1
                Width           =   2415
             End
             Begin VB.OptionButton optWinMergeFilter 
-               Caption         =   "Debug UI"
+               Caption         =   "Debug Interface"
                Height          =   315
                Index           =   2
-               Left            =   2880
+               Left            =   2460
                TabIndex        =   31
                Top             =   330
-               Width           =   1455
+               Width           =   2205
             End
             Begin VB.OptionButton optWinMergeFilter 
-               Caption         =   "Signature"
+               Caption         =   "Intermediate"
                Height          =   345
                Index           =   1
                Left            =   240
                TabIndex        =   30
                Top             =   690
-               Width           =   1455
+               Width           =   1845
             End
             Begin VB.OptionButton optWinMergeFilter 
                Caption         =   "Basic"
@@ -279,6 +287,15 @@ Begin VB.Form Form1
       TabIndex        =   3
       Top             =   4440
       Width           =   9885
+      Begin VB.TextBox txtData 
+         Height          =   3885
+         Left            =   6030
+         MultiLine       =   -1  'True
+         ScrollBars      =   3  'Both
+         TabIndex        =   34
+         Top             =   630
+         Width           =   3795
+      End
       Begin VB.CommandButton Command1 
          Caption         =   "Ú"
          BeginProperty Font 
@@ -338,8 +355,8 @@ Begin VB.Form Form1
          Left            =   90
          TabIndex        =   6
          Top             =   600
-         Width           =   9645
-         _ExtentX        =   17013
+         Width           =   5925
+         _ExtentX        =   10451
          _ExtentY        =   6906
          View            =   3
          LabelEdit       =   1
@@ -387,10 +404,9 @@ Begin VB.Form Form1
             Object.Width           =   6174
          EndProperty
       End
-      Begin VB.Label Label2 
+      Begin VB.Label lblMatched 
          Caption         =   "Matched Functions"
          Height          =   195
-         Index           =   0
          Left            =   150
          TabIndex        =   8
          Top             =   330
@@ -404,7 +420,7 @@ Begin VB.Form Form1
          Caption         =   "Rename Tools"
          ForeColor       =   &H80000008&
          Height          =   255
-         Left            =   2040
+         Left            =   3300
          TabIndex        =   7
          Top             =   300
          Width           =   2355
@@ -524,6 +540,7 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":0000
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -545,6 +562,7 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":007C
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -605,9 +623,6 @@ Begin VB.Form Form1
       End
       Begin VB.Menu mnuSpacer1 
          Caption         =   "-"
-      End
-      Begin VB.Menu mnuViewStats 
-         Caption         =   "View Current Stats"
       End
       Begin VB.Menu mnuCfgEngine 
          Caption         =   "Configure Match Engine"
@@ -743,6 +758,10 @@ Option Explicit
 'what doesnt. UI should present enough info you can fine tune the code as you want and
 'determine its strengths/weaknesses without too much mroe work.
 
+'note if we could remove matched entries from a/b collections after a match, then subsequent match
+'  checks would have fewer functions to iteriate over (they arent checked again but they still have to be looped)
+'  not sure the complexity is worth the optimization...
+'
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Public cmndlg1 As New clsCmnDlg
@@ -758,7 +777,6 @@ Dim b As New Collection 'of cfunction, all funcs for idb 2
 Dim c As CFunction
 Dim h As CFunction
     
-Dim txtReport As String
 Public currentMDB As String
 Public SigMode As Boolean
 
@@ -832,7 +850,7 @@ End Sub
 
 'splitter code
 '------------------------------------------------
-Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim a1&
 
     If Button = 1 Then 'The mouse is down
@@ -842,7 +860,7 @@ Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, X As Single,
             Capturing = True
         End If
         With splitter
-            a1 = .Top + Y
+            a1 = .Top + y
             If MoveOk(a1) Then
                 .Top = a1
             End If
@@ -850,7 +868,7 @@ Private Sub splitter_MouseMove(Button As Integer, Shift As Integer, X As Single,
     End If
 End Sub
 
-Private Sub splitter_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub splitter_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Capturing Then
         ReleaseCapture
         Capturing = False
@@ -871,9 +889,9 @@ Private Sub DoMove()
 End Sub
 
 
-Private Function MoveOk(Y&) As Boolean  'Put in any limiters you desire
+Private Function MoveOk(y&) As Boolean  'Put in any limiters you desire
     MoveOk = False
-    If Y > lv1.Top + 1000 And Y < Me.Height - (Frame1.Height * 1.5) Then
+    If y > lv1.Top + 1000 And y < Me.Height - (Frame1.Height * 1.5) Then
         MoveOk = True
     End If
 End Function
@@ -885,14 +903,14 @@ End Function
  
 Private Sub cmdBreakMatch_Click()
    
-   Dim X, li As ListItem
+   Dim x, li As ListItem
    On Error Resume Next
    
    If sel_exact Is Nothing Then Exit Sub
    
-   X = Split(sel_exact.Tag, ",")
-   Set c = GetClassFromAutoID(a, X(0))
-   Set h = GetClassFromAutoID(b, X(1))
+   x = Split(sel_exact.Tag, ",")
+   Set c = GetClassFromAutoID(a, x(0))
+   Set h = GetClassFromAutoID(b, x(1))
    
    Set li = lv1.ListItems.Add(, "id:" & c.autoid)
    li.Tag = c.autoid
@@ -914,7 +932,7 @@ Private Sub cmdBreakMatch_Click()
             
 End Sub
 
-Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
     On Error Resume Next
     Dim f As String
     f = data.Files(1)
@@ -924,12 +942,12 @@ Private Sub Form_OLEDragDrop(data As DataObject, Effect As Long, Button As Integ
     End If
 End Sub
 
-Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lv1_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     Set selLV = lv1
     If Button = 2 Then PopupMenu mnuLVPopup
 End Sub
 
-Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lv2_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     Set selLV = lv2
     If Button = 2 Then PopupMenu mnuLVPopup
 End Sub
@@ -1132,8 +1150,8 @@ Private Sub Form_Resize()
     
     Frame1.Width = Me.Width - 120
     splitter.Width = Frame1.Width
-    'txtReport.Width = Frame1.Width - 120
-    lvExact.Width = Frame1.Width - 120
+    lvExact.Width = Frame1.Width - 120 - txtData.Width - 120
+    txtData.left = Frame1.Width - txtData.Width - 120 - Frame1.left
     pb.Width = Me.Width - pb.left - 200
     
     Command1(1).left = txtB.left - Command1(1).Width
@@ -1188,22 +1206,22 @@ Private Sub lv2_DblClick()
 End Sub
 
 Private Sub lvExact_DblClick()
-   Dim X
+   Dim x
    On Error Resume Next
    Dim f As frmProfile
    If sel_exact Is Nothing Then Exit Sub
    Set f = New frmProfile
-   X = Split(sel_exact.Tag, ",")
-   Set c = GetClassFromAutoID(a, X(0))
-   Set h = GetClassFromAutoID(b, X(1))
+   x = Split(sel_exact.Tag, ",")
+   Set c = GetClassFromAutoID(a, x(0))
+   Set h = GetClassFromAutoID(b, x(1))
    f.ShowProfile c, h
 End Sub
 
-Private Function GetClassFromAutoID(X As Collection, autoid) As CFunction
-    Dim Y As CFunction
-    For Each Y In X
-        If Y.autoid = autoid Then
-            Set GetClassFromAutoID = Y
+Private Function GetClassFromAutoID(x As Collection, autoid) As CFunction
+    Dim y As CFunction
+    For Each y In x
+        If y.autoid = autoid Then
+            Set GetClassFromAutoID = y
             Exit Function
         End If
     Next
@@ -1402,12 +1420,13 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
         c.StandardizeAsm asm
 
         If KeyExistsInCollection(IIf(isTableA, a, b), c.mCRC) Then
-            c.ReHash asm
-            If KeyExistsInCollection(IIf(isTableA, a, b), c.mCRC) Then
-                While KeyExistsInCollection(IIf(isTableA, a, b), c.mCRC)
-                    c.mCRC = "rand:" & RandomNum
-                Wend
-            End If
+            'c.ReHash asm
+            'If KeyExistsInCollection(IIf(isTableA, a, b), c.mCRC) Then
+                c.mCRC = HandleCRCDuplicate(IIf(isTableA, a, b), c.mCRC) 'using just this instead of rehash is much much better..
+                'While KeyExistsInCollection(IIf(isTableA, a, b), c.mCRC)
+                '    c.mCRC = "rand:" & RandomNum
+                'Wend
+            'End If
         End If
 
         If Len(c.mCRC) > 0 Then
@@ -1446,6 +1465,24 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
     
     
 End Sub
+
+Private Function HandleCRCDuplicate(c As Collection, baseCrc As String) As String
+    
+    Dim tmp As String
+    Dim i As Long
+    
+    Do
+        i = i + 1
+        If i > 3000 Then
+            tmp = "rand:" & RandomNum
+        Else
+            tmp = baseCrc & "_" & i
+        End If
+    Loop While KeyExistsInCollection(c, tmp)
+    
+    HandleCRCDuplicate = tmp
+    
+End Function
 
 Function ExactCrcMatch() As Long
     
@@ -1627,7 +1664,7 @@ Function APIMatch2() As Long
 End Function
 
 Function ConstMatch() As Long
-    Dim X, j
+    Dim x, j
     
       Dim ret As Long
       pb.value = 0
@@ -1639,8 +1676,8 @@ Function ConstMatch() As Long
                      If isWithin(3, c.Constants.Count, h.Constants.Count, 1) And _
                           isWithin(60, c.Length, h.Length) Then
                                 j = 0
-                                For Each X In c.Constants
-                                   If h.ConstantExists(X) Then j = j + 1
+                                For Each x In c.Constants
+                                   If h.ConstantExists(x) Then j = j + 1
                                 Next
                                 
                                 If isWithin(3, c.Constants.Count, j, 2) Then
@@ -1780,6 +1817,7 @@ Sub LoadDataBase(pth As String)
     
     GlobalResets
     startTime = GetTickCount
+    lblMatched = "Matched"
     
     If chkExternalMatchScript.value = 1 Then
         If Not FileExists(App.path & "\compare.vbs") Then
@@ -1800,8 +1838,11 @@ Sub LoadDataBase(pth As String)
     cn.Open "Provider=MSDASQL;Driver={Microsoft " & _
             "Access Driver (*.mdb)};DBQ=" & pth & ";"
     
-    LoadList lv1, IIf(SigMode, TmpMode, compare1)  ', , " and index=16"
-    LoadList lv2, IIf(SigMode, SignatureScan, compare2)  ', , " and index=21"
+    Dim minLength As Long
+    minLength = IIf(chkEnforceMinSize.value = 1, 30, 0)
+    
+    LoadList lv1, IIf(SigMode, TmpMode, compare1), minLength ', , " and index=16"
+    LoadList lv2, IIf(SigMode, SignatureScan, compare2), minLength ', , " and index=21"
     
     push r, "Total functions " & lv1.ListItems.Count & ":" & lv2.ListItems.Count
     minFunctions = IIf(lv1.ListItems.Count > lv2.ListItems.Count, lv2.ListItems.Count, lv1.ListItems.Count)
@@ -1873,17 +1914,19 @@ Sub LoadDataBase(pth As String)
     pcent = CInt((lvExact.ListItems.Count / minFunctions) * 100) & "%"
     Label1 = pcent & " similarity. See stats for details"
     
-    r(UBound(r)) = r(UBound(r)) & "  - made " & lvExact.ListItems.Count & " matchs"
+    r(UBound(r)) = r(UBound(r)) & vbCrLf & "Total Matches: " & lvExact.ListItems.Count
     push r, "Percent:  " & pcent
     push r, "Elapsed Time: " & (endTime - startTime) \ 1000 & "secs"
     
-    txtReport = Join(r, vbCrLf) & vbCrLf & Join(stats, vbCrLf)
+    txtData = Join(r, vbCrLf) & vbCrLf & Join(stats, vbCrLf)
     
     idaClient.EnumIDAWindows
     idaHwndA = idaClient.FindHwndForIDB(fullIDB_A)
     idaHwndB = idaClient.FindHwndForIDB(fullIDB_B)
     mnuDecompileSelected.Enabled = idaClient.DecompilerActive(idaHwndA)
         
+    lblMatched = "Matched: " & lvExact.ListItems.Count
+    
     Unload sc(1)
     
 End Sub
@@ -1894,7 +1937,6 @@ Private Sub Form_Unload(Cancel As Integer)
     FormPos Me, True, True
     LoadChkSettings False
     SaveSetting "IDACompare", "settings", "SplitterTop", splitter.Top
-    'SaveSetting "IDACompare", "settings", "optInternalMatchEngine", optInternalMatchEngine.value
     SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
     Set cmndlg1 = Nothing
     
@@ -1904,7 +1946,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Next
 End Sub
 
-Private Sub lblTransform_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblTransform_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     PopupMenu mnuPopupRename
 End Sub
 
@@ -1976,16 +2018,16 @@ End Sub
 
 
 Private Sub lvExact_ItemClick(ByVal Item As MSComctlLib.ListItem)
-   Dim X, asmA As String, asmB As String
+   Dim x, asmA As String, asmB As String
    On Error Resume Next
    
    If Not sel_exact Is Nothing Then
         If sel_exact = Item Then Exit Sub
    End If
    
-   X = Split(Item.Tag, ",")
-   asmA = ado("Select disasm from a where autoid=" & X(0))!disasm
-   asmB = ado("Select disasm from b where autoid=" & X(1))!disasm
+   x = Split(Item.Tag, ",")
+   asmA = ado("Select disasm from a where autoid=" & x(0))!disasm
+   asmB = ado("Select disasm from b where autoid=" & x(1))!disasm
    
    'Set c = a(Item.ListSubItems(3))
    rtfHighlightAsm asmA, Nothing, txtA
@@ -2011,15 +2053,15 @@ Function FindMatchAutoID(funcName As String, isTableA As Boolean) As Long
     
     Dim li As ListItem
     Dim fn As String
-    Dim X
+    Dim x
     
     On Error Resume Next
     
     For Each li In lvExact.ListItems
         If isTableA Then fn = li.Text Else fn = li.SubItems(1)
         If fn = funcName Then
-            X = Split(li.Tag, ",")
-            FindMatchAutoID = IIf(isTableA, X(0), X(1))
+            x = Split(li.Tag, ",")
+            FindMatchAutoID = IIf(isTableA, x(0), x(1))
             Exit Function
         End If
     Next
@@ -2039,12 +2081,12 @@ Sub GlobalResets()
     lv2.ListItems.Clear
     txtA = Empty
     txtB = Empty
-    txtReport = Empty
+    txtData = Empty
     lvExact.ListItems.Clear
     
 End Sub
 
-Private Sub lvExact_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lvExact_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
     If Button = 2 Then PopupMenu mnuPopup
 End Sub
 
@@ -2216,8 +2258,4 @@ Private Sub mnuTopCopyFuncNames_Click()
     
     Clipboard.Clear
     Clipboard.SetText tmp
-End Sub
-
-Private Sub mnuViewStats_Click()
-    frmDataViewer.ShowData txtReport
 End Sub

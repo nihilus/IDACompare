@@ -81,7 +81,7 @@ Function StandardizeAsm(ByVal asm As String) As String
                 If InStr(k, "h") > 0 Then
                     esp = CLng("&h" & Replace(k, "h", ""))
                 Else
-                    esp = CLng(k)
+                    If IsNumeric(k) Then esp = CLng(k)
                 End If
             ElseIf right(Trim(tmp(j)), 1) = ":" Then
                 labels.Add Mid(Trim(tmp(j)), 1, Len(Trim(tmp(j))) - 1)

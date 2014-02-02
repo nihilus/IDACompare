@@ -36,6 +36,11 @@ Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
     Dim x, i As Long
     Const indentLen = 2
     
+    If c Is Nothing Then 'functions coming from lvExact dont have the class
+        Set c = New CFunction
+        c.StandardizeAsm asm
+    End If
+    
     tmp() = Split(asm, vbCrLf)
     
     'first we add line breaks for comments and indents for code..

@@ -1,7 +1,7 @@
 
  integrate compare UI with IDASrvr so right click
     rename functions
-    if highlight sub receives null function, create new for constant bolding..
+    create icon
 
 
  
