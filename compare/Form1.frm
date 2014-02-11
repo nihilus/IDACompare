@@ -540,7 +540,6 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":0000
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -562,7 +561,6 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":007C
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -766,7 +764,8 @@ Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Public cmndlg1 As New clsCmnDlg
 Public cn As New Connection
-
+Public reg As New clsRegistry2
+    
 'parallel function match collections, m1(index) matched with m2(index)
 Dim m1 As New Collection 'of matched cfunction from ibd1
 Dim m2 As New Collection 'of matched cfunction from ibd2
@@ -843,6 +842,8 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 '    End If
 '
 'End Sub
+
+ 
 
 Private Sub optWinMergeFilter_Click(index As Integer)
     SaveSetting "winmerge", "settings", "defaultFilter", index
@@ -970,6 +971,10 @@ Private Sub lv1_KeyPress(KeyAscii As Integer)
         mnuDecompileSelected_Click
         KeyAscii = 0
     End If
+    If Chr(KeyAscii) = "w" Then
+        mnuCurExportForDiff_Click
+        KeyAscii = 0
+    End If
 End Sub
 
 Private Sub lv2_KeyPress(KeyAscii As Integer)
@@ -981,6 +986,10 @@ Private Sub lv2_KeyPress(KeyAscii As Integer)
         mnuDecompileSelected_Click
         KeyAscii = 0
     End If
+    If Chr(KeyAscii) = "w" Then
+        mnuCurExportForDiff_Click
+        KeyAscii = 0
+    End If
 End Sub
 
 Private Sub lvExact_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
@@ -988,12 +997,25 @@ Private Sub lvExact_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
 End Sub
 
 Private Sub lvExact_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
     If Chr(KeyAscii) = "p" Then
         mnuProfileSelected_Click
         KeyAscii = 0 'have to eat the keypress so that it doesnt auto find the first function starting with p
     End If
     If Chr(KeyAscii) = "d" Then
         mnuDecompileSelected_Click
+        KeyAscii = 0
+    End If
+    If Chr(KeyAscii) = "w" Then
+        mnuCurExportForDiff_Click
+        KeyAscii = 0
+    End If
+    If Chr(KeyAscii) = "x" Then
+        Dim i As Long
+        i = lvExact.SelectedItem.index
+        lvExact.ListItems.Remove i
+        lvExact.ListItems(i).Selected = True
+        lvExact_ItemClick lvExact.SelectedItem
         KeyAscii = 0
     End If
 End Sub
@@ -1393,11 +1415,13 @@ Sub LoadList(lv As ListView, mode As CompareModes, Optional minLen As Long = 30,
     If mode = compare1 Then
         idb_a = ado("Select top 1 idb from " & tbl)!idb
         fullIDB_A = idb_a
+        If InStr(idb_a, "\") > 0 Then idb_a = fso.FileNameFromPath(idb_a)
         If Len(idb_a) > 12 Then idb_a = Mid(idb_a, 1, 10) & "..."
         lblDBA = "1: " & idb_a
     ElseIf mode = compare2 Then
         idb_b = ado("Select top 1 idb from " & tbl)!idb
         fullIDB_B = idb_b
+        If InStr(idb_b, "\") > 0 Then idb_b = fso.FileNameFromPath(idb_b)
         If Len(idb_b) > 12 Then idb_b = Mid(idb_b, 1, 10) & "..."
         lblDBB = "2: " & idb_b
     End If
@@ -2015,12 +2039,31 @@ Public Sub lv2_ItemClick(ByVal Item As MSComctlLib.ListItem)
     
 End Sub
 
+Private Function lvSelCount(lv As ListView) As Long
+    Dim li As ListItem
+    For Each li In lv.ListItems
+        If li.Selected Then lvSelCount = lvSelCount + 1
+    Next
+End Function
 
+Private Function lvHasMultSel(lv As ListView) As Boolean
+    Dim li As ListItem
+    Dim cnt As Long
+    For Each li In lv.ListItems
+        If li.Selected Then cnt = cnt + 1
+        If cnt > 1 Then
+            lvHasMultSel = True
+            Exit Function
+        End If
+    Next
+End Function
 
 Private Sub lvExact_ItemClick(ByVal Item As MSComctlLib.ListItem)
    Dim x, asmA As String, asmB As String
    On Error Resume Next
    
+   If lvHasMultSel(lvExact) Then Exit Sub 'i dont want to have to cycle through entire list every time...
+    
    If Not sel_exact Is Nothing Then
         If sel_exact = Item Then Exit Sub
    End If
@@ -2160,9 +2203,12 @@ Private Sub mnuCurExportForDiff_Click()
         Exit Sub
     End If
    
+    reg.hive = HKEY_CURRENT_USER
+    reg.SetValue "Software\Thingamahoochie\WinMerge\Settings", "PluginsEnabled", 1, REG_DWORD
+    
     If Not fso.FileExists(dll) Then
         FileCopy srcDll, dll
-        MsgBox "The IDACompare Winmerge plugin has been automatically installed. You will have to enable plugins and then run it manually from the prediffer menu.", vbInformation
+        MsgBox "The IDACompare Winmerge plugin has been automatically installed." & vbCrLf & vbCrLf & "Plugins have been enabled, and the prediffer should be automatically applied.", vbInformation
     End If
    
     If wHash.HashFile(dll) <> wHash.HashFile(srcDll) Then

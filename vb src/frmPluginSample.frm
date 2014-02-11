@@ -98,7 +98,7 @@ Begin VB.Form frmIDACompare
          Caption         =   "Save Compare Snap 1"
          Height          =   375
          Index           =   0
-         Left            =   120
+         Left            =   90
          TabIndex        =   5
          Top             =   180
          Width           =   1815
@@ -558,7 +558,9 @@ Sub DoExport(mode As ExportModes)
     pb.value = 0
     pb.Max = lv.ListItems.Count
     
-    idb = FileNameFromPath(loadedFile)
+    'idb = FileNameFromPath(loadedFile)
+    idb = loadedFile()
+    If Len(idb) > 254 Then idb = Right(idb, 254) 'in case its a binary of the same name but different paths...
     If Len(idb) = 0 Then idb = "sample" 'maybe they loaded a lib file?
     
     For Each li In lv.ListItems
