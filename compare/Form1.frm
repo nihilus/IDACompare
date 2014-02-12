@@ -540,6 +540,7 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":0000
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -561,6 +562,7 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
+      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":007C
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -794,6 +796,9 @@ Dim fullIDB_B As String
 
 Dim idb_a As String
 Dim idb_b As String
+
+Dim selA As New Collection
+Dim selB As New Collection
 
 Enum CompareModes
     compare1 = 0
@@ -2305,3 +2310,15 @@ Private Sub mnuTopCopyFuncNames_Click()
     Clipboard.Clear
     Clipboard.SetText tmp
 End Sub
+
+Private Sub txtA_SelChange()
+    If HighLightRunning Then Exit Sub
+    DynamicHighLight txtA, txtA.SelText, selA, vbYellow, , True
+End Sub
+
+Private Sub txtb_SelChange()
+    If HighLightRunning Then Exit Sub
+    DynamicHighLight txtB, txtB.SelText, selB, vbYellow, , True
+End Sub
+
+

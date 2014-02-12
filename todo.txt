@@ -5,6 +5,7 @@
     copy selection pad entries
     way to easy remove all of a certain match engine..
     in advanced winmerge keep arg_x markers
+    may not be exporting chunked functions properly
 
 
  

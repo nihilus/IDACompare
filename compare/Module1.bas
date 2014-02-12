@@ -25,12 +25,15 @@ Global sort As New CAlphaSort
 Global dlg As New clsCmnDlg
 Global fso As New CFileSystem2
 Global wHash As New CWinHash
+Global HighLightRunning As Boolean
 
 Const LANG_US = 1049
 
 Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
     
     On Error Resume Next
+    
+    HighLightRunning = True
     
     Dim tmp() As String
     Dim x, i As Long
@@ -65,25 +68,25 @@ Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
         x = Trim(tmp(i))
         
         If left(x, 1) = "j" Then 'isjump
-            tb.SelStart = curPos
-            tb.SelLength = Len(tmp(i))
+            tb.selStart = curPos
+            tb.selLength = Len(tmp(i))
             tb.SelColor = vbRed
         ElseIf left(x, 4) = "call" Then 'iscall
-            tb.SelStart = curPos
-            tb.SelLength = Len(tmp(i))
+            tb.selStart = curPos
+            tb.selLength = Len(tmp(i))
             tb.SelColor = vbBlue
         End If
         
         a = InStr(tmp(i), ";")
         If a > 0 Then 'comment
-            tb.SelStart = curPos + a
-            tb.SelLength = Len(tmp(i)) - a
+            tb.selStart = curPos + a
+            tb.selLength = Len(tmp(i)) - a
             tb.SelColor = &H8000&
         End If
         
         If right(x, 1) = ":" Then 'is label
-            tb.SelStart = curPos
-            tb.SelLength = Len(tmp(i))
+            tb.selStart = curPos
+            tb.selLength = Len(tmp(i))
             tb.SelColor = &H404000
             tb.SelBold = True
         End If
@@ -105,10 +108,10 @@ Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
                 eol = InStr(a, tb.Text, vbCrLf)
                 nextSpace = InStr(a + 1, tb.Text, " ")
                 If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
-                tb.SelStart = a
-                tb.SelLength = eol - a
+                tb.selStart = a
+                tb.selLength = eol - a
                 tb.SelBold = True
-                a = a + tb.SelLength
+                a = a + tb.selLength
             End If
         Loop While a > 0
     Next
@@ -129,9 +132,11 @@ Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
 '        Loop While a > 0
 '    Next
     
-    tb.SelStart = 0
+    tb.selStart = 0
     
     rtf.SetWindowUpdate tb, False
+    
+    HighLightRunning = False
     
 End Sub
 
