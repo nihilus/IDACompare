@@ -184,3 +184,6 @@ Private Function DumpCollection(c As Collection, Optional delimiter As String = 
     DumpCollection = ret
 End Function
 
+Private Sub Form_Load()
+    Me.Icon = Form1.Icon
+End Sub

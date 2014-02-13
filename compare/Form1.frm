@@ -17,6 +17,7 @@ Begin VB.Form Form1
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   Icon            =   "Form1.frx":0000
    LinkTopic       =   "Form1"
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   9195
@@ -542,7 +543,7 @@ Begin VB.Form Form1
       _Version        =   393217
       Enabled         =   -1  'True
       ScrollBars      =   2
-      TextRTF         =   $"Form1.frx":0000
+      TextRTF         =   $"Form1.frx":1D82
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Courier"
          Size            =   9.75
@@ -564,7 +565,7 @@ Begin VB.Form Form1
       _Version        =   393217
       Enabled         =   -1  'True
       ScrollBars      =   2
-      TextRTF         =   $"Form1.frx":007C
+      TextRTF         =   $"Form1.frx":1DFE
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Courier"
          Size            =   9.75
@@ -657,29 +658,35 @@ Begin VB.Form Form1
    End
    Begin VB.Menu mnuPopup 
       Caption         =   "mnuPopup"
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Select All"
-         Index           =   0
+      Begin VB.Menu mnuSelectMain 
+         Caption         =   "Select"
+         Begin VB.Menu mnuSelect 
+            Caption         =   "All"
+            Index           =   0
+         End
+         Begin VB.Menu mnuSelect 
+            Caption         =   "None"
+            Index           =   1
+         End
+         Begin VB.Menu mnuSelect 
+            Caption         =   "Invert"
+            Index           =   2
+         End
+         Begin VB.Menu mnuSelect 
+            Caption         =   "Default names"
+            Index           =   3
+         End
       End
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Select None"
-         Index           =   1
-      End
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Invert Selection"
-         Index           =   2
-      End
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Remove Selected"
-         Index           =   3
-      End
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Remove UnSelected"
-         Index           =   4
-      End
-      Begin VB.Menu mnuCheckAll 
-         Caption         =   "Select all w/Default names"
-         Index           =   5
+      Begin VB.Menu mnuRemoveMain 
+         Caption         =   "Remove"
+         Begin VB.Menu mnuRemove 
+            Caption         =   "Selected"
+            Index           =   0
+         End
+         Begin VB.Menu mnuRemove 
+            Caption         =   "ExactCRC"
+            Index           =   1
+         End
       End
       Begin VB.Menu mnuCopySelection 
          Caption         =   "Copy Selection"
@@ -762,6 +769,19 @@ Option Explicit
 '  checks would have fewer functions to iteriate over (they arent checked again but they still have to be looped)
 '  not sure the complexity is worth the optimization...
 '
+
+'to register file extension to open in this app..
+'homedir = homedir & "\ida_compare.exe"
+'If Not fso.FileExists(homedir) Then Exit Sub
+'cmd = "cmd /c ftype IDACompare.Document=""" & homedir & """ %1 && assoc .idac=IDACompare.Document"
+'
+'register file type, set default icon..
+'Dim wsh As Object 'WshShell
+'Set wsh = CreateObject("WScript.Shell")
+'If Not wsh Is Nothing Then
+'wsh.RegWrite "HKCR\IDACompare.Document\DefaultIcon\", homedir & ",0"
+'End If
+                
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Public cmndlg1 As New clsCmnDlg
@@ -849,6 +869,45 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 'End Sub
 
  
+
+Private Sub mnuRemove_Click(index As Integer)
+    
+    On Error Resume Next
+    Dim li As ListItem
+    Dim i As Long
+ 
+    For i = lvExact.ListItems.Count To 1 Step -1
+        Set li = lvExact.ListItems(i)
+        Select Case index
+            Case 0: If li.Selected Then lvExact.ListItems.Remove li.index
+            Case 1: If li.SubItems(4) = "Exact CRC" Then lvExact.ListItems.Remove li.index
+        End Select
+    Next
+    
+    lblMatched.caption = "Matched: " & lvExact.ListItems.Count
+    
+End Sub
+
+Private Sub mnuSelect_Click(index As Integer)
+    
+    On Error Resume Next
+    Dim li As ListItem
+    
+    For Each li In lvExact.ListItems
+        Select Case index
+            Case 0: li.Selected = True
+            Case 1: li.Selected = False
+            Case 2: li.Selected = Not li.Selected
+            Case 3:
+                    If Len(li.Text) < 4 Then
+                        li.Selected = False
+                    Else
+                        li.Selected = IIf(VBA.left(li.Text, 4) = "sub_", True, False)
+                    End If
+        End Select
+    Next
+    
+End Sub
 
 Private Sub optWinMergeFilter_Click(index As Integer)
     SaveSetting "winmerge", "settings", "defaultFilter", index
@@ -1021,6 +1080,7 @@ Private Sub lvExact_KeyPress(KeyAscii As Integer)
         lvExact.ListItems.Remove i
         lvExact.ListItems(i).Selected = True
         lvExact_ItemClick lvExact.SelectedItem
+        lblMatched.caption = "Matched: " & lvExact.ListItems.Count
         KeyAscii = 0
     End If
 End Sub
@@ -1336,6 +1396,32 @@ Function isIDE() As Boolean
     isIDE = CBool(Err.Number)
 End Function
 
+Function ShowLastMdbInMenu()
+    Dim lastMDB As String
+    
+    lastMDB = GetSetting("IDACompare", "settings", "lastMDB", currentMDB)
+    
+    If Len(lastMDB) = 0 Then
+        mnuLoadLast.caption = "Open Last"
+        mnuLoadLast.Enabled = False
+        Exit Function
+    End If
+    
+    If Not fso.FileExists(lastMDB) Then
+        mnuLoadLast.caption = "Open Last"
+        mnuLoadLast.Enabled = False
+        Exit Function
+    End If
+    
+    lastMDB = fso.GetBaseName(lastMDB)
+    
+    If Len(lastMDB) > 15 Then lastMDB = VBA.left(lastMDB, 12) & "..."
+    
+    mnuLoadLast.Enabled = True
+    mnuLoadLast.caption = "Open Last (" & lastMDB & ")"
+
+End Function
+
 'if we have a function calling out to a matched function
 'and it was the only way there..then if we only had one
 'other unmatched on calling to it them we could relate them.
@@ -1359,6 +1445,7 @@ Private Sub Form_Load()
     filtIndex = GetSetting("winmerge", "settings", "defaultFilter", 1)
     optWinMergeFilter(filtIndex).value = True
     LoadChkSettings
+    ShowLastMdbInMenu
     
     cmd = Command
     'If isIDE() Then cmd = App.path & "\..\mydoom_example.mdb"
@@ -1828,6 +1915,8 @@ Private Sub mnuLoadDatabase_click()
     cmndlg1.SetCustomFilter "Access Databases", "*.mdb"
     pth = cmndlg1.OpenDialog(CustomFilter, , , Me.hwnd)
     If Len(pth) = 0 Then Exit Sub
+    If Len(currentMDB) > 0 Then SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
+    ShowLastMdbInMenu
     currentMDB = pth
     LoadDataBase currentMDB
 End Sub
@@ -1966,7 +2055,11 @@ Private Sub Form_Unload(Cancel As Integer)
     FormPos Me, True, True
     LoadChkSettings False
     SaveSetting "IDACompare", "settings", "SplitterTop", splitter.Top
-    SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
+    
+    If Len(currentMDB) > 0 And fso.FileExists(currentMDB) Then
+        SaveSetting "IDACompare", "settings", "lastMDB", currentMDB
+    End If
+    
     Set cmndlg1 = Nothing
     
     Dim f
@@ -2138,33 +2231,7 @@ Private Sub lvExact_MouseUp(Button As Integer, Shift As Integer, x As Single, y 
     If Button = 2 Then PopupMenu mnuPopup
 End Sub
 
-Private Sub mnuCheckAll_Click(index As Integer)
-    
-    On Error Resume Next
-    Dim li As ListItem
-    
-Top:
-    For Each li In lvExact.ListItems
-        Select Case index
-            Case 0: li.Selected = True
-            Case 1: li.Selected = False
-            Case 2: li.Selected = Not li.Selected
-            Case 3: If li.Selected Then lvExact.ListItems.Remove li.index: GoTo Top
-            Case 4: If Not li.Selected Then lvExact.ListItems.Remove li.index: GoTo Top
-            Case 5:
-                    If Len(li.Text) < 4 Then
-                        li.Selected = False
-                    Else
-                        li.Selected = IIf(VBA.left(li.Text, 4) = "sub_", True, False)
-                    End If
-        End Select
-    Next
-    
-    If index = 3 Or index = 4 Then 'removes
-        MsgBox lvExact.ListItems.Count & " matches left", vbInformation
-    End If
-    
-End Sub
+ 
 
 Private Sub mnuCopySelection_Click()
     Clipboard.Clear
@@ -2207,11 +2274,10 @@ Private Sub mnuCurExportForDiff_Click()
                 vbCrLf & vbCrLf & "Expected path: " & exe, vbInformation
         Exit Sub
     End If
-   
-    reg.hive = HKEY_CURRENT_USER
-    reg.SetValue "Software\Thingamahoochie\WinMerge\Settings", "PluginsEnabled", 1, REG_DWORD
-    
+       
     If Not fso.FileExists(dll) Then
+        reg.hive = HKEY_CURRENT_USER
+        reg.SetValue "Software\Thingamahoochie\WinMerge\Settings", "PluginsEnabled", 1, REG_DWORD
         FileCopy srcDll, dll
         MsgBox "The IDACompare Winmerge plugin has been automatically installed." & vbCrLf & vbCrLf & "Plugins have been enabled, and the prediffer should be automatically applied.", vbInformation
     End If

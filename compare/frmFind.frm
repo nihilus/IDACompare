@@ -204,6 +204,7 @@ End Function
  
 Private Sub Form_Load()
     On Error Resume Next
+    Me.Icon = Form1.Icon
     mnuPopup.Visible = False
     With lv1.ColumnHeaders(2)
         .Width = lv1.Width - .left - 100

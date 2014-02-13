@@ -1,11 +1,11 @@
 
  integrate compare UI with IDASrvr so right click
-    rename functions
-    create icon
+    rename functions (both or one db)
     copy selection pad entries
     way to easy remove all of a certain match engine..
     in advanced winmerge keep arg_x markers
     may not be exporting chunked functions properly
+    select like
 
 
  

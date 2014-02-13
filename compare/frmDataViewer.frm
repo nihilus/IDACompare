@@ -39,3 +39,6 @@ Public Function ShowData(x As String)
     Me.Visible = True
 End Function
 
+Private Sub Form_Load()
+    Me.Icon = Form1.Icon
+End Sub

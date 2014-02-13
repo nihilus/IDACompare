@@ -6,6 +6,7 @@ Begin VB.Form frmIDACompare
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   8415
+   Icon            =   "frmPluginSample.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   3555
    ScaleWidth      =   8415
