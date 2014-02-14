@@ -255,6 +255,63 @@ Sub ScrollIncremental(t As Object, Optional horz As Integer = 0, Optional vert A
 
 End Sub
 
+Function isAlpha(c As Integer) As Boolean
+
+    If c >= Asc("a") And c <= Asc("z") Then
+        isAlpha = True
+        Exit Function
+    End If
+    
+    If c >= Asc("A") And c <= Asc("Z") Then
+        isAlpha = True
+        Exit Function
+    End If
+    
+    If c >= Asc("0") And c <= Asc("9") Then
+        isAlpha = True
+        Exit Function
+    End If
+    
+    If c = Asc("_") Then isAlpha = True
+    
+End Function
+
+Function CurrentWord(rtb As RichTextBox) As String
+
+    Dim startAt As Long
+    Dim endAt As Long
+    Dim c As Integer
+    
+    On Error Resume Next
+    
+    startAt = rtb.selStart
+        
+    Do While startAt > 1
+        c = Asc(Mid(rtb.Text, startAt, 1))
+        If isAlpha(c) Then
+            startAt = startAt - 1
+        Else
+            startAt = startAt + 1
+            Exit Do
+        End If
+    Loop
+            
+    endAt = rtb.selStart
+    
+    Do While endAt < Len(rtb.Text)
+        c = Asc(Mid(rtb.Text, endAt, 1))
+        If isAlpha(c) Then
+            endAt = endAt + 1
+        Else
+            Exit Do
+        End If
+    Loop
+    
+    CurrentWord = Mid(rtb.Text, startAt, endAt - startAt)
+        
+End Function
+
+
 Sub SelBackcolor(rtb As RichTextBox, lngColor As Long)
     Dim tCF2 As CHARFORMAT2
     tCF2.dwMask = CFM_BACKCOLOR

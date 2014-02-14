@@ -541,7 +541,6 @@ Begin VB.Form Form1
       _ExtentX        =   8652
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":1D82
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -563,7 +562,6 @@ Begin VB.Form Form1
       _ExtentX        =   8599
       _ExtentY        =   2725
       _Version        =   393217
-      Enabled         =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"Form1.frx":1DFE
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -2377,14 +2375,29 @@ Private Sub mnuTopCopyFuncNames_Click()
     Clipboard.SetText tmp
 End Sub
 
-Private Sub txtA_SelChange()
+Private Sub txtA_Click()
+
     If HighLightRunning Then Exit Sub
-    DynamicHighLight txtA, txtA.SelText, selA, vbYellow, , True
+    
+    If txtA.selLength > 0 Then
+        DynamicHighLight txtA, txtA.SelText, selA, vbYellow, , True
+    Else
+        DynamicHighLight txtA, CurrentWord(txtA), selA, vbYellow, , True
+    End If
+    
 End Sub
 
-Private Sub txtb_SelChange()
+Private Sub txtb_Click()
+
     If HighLightRunning Then Exit Sub
-    DynamicHighLight txtB, txtB.SelText, selB, vbYellow, , True
+    
+    If txtB.selLength > 0 Then
+        DynamicHighLight txtB, txtB.SelText, selB, vbYellow, , True
+    Else
+        DynamicHighLight txtB, CurrentWord(txtB), selB, vbYellow, , True
+    End If
+    
+     
 End Sub
 
 
