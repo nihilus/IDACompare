@@ -76,11 +76,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/export:PLUGIN"
-				AdditionalDependencies="$(IDASDK)\libvc.w32\ida.lib odbc32.lib odbccp32.lib"
-				OutputFile="./../IDA_Compare.plw"
+				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				OutputFile=""
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(IDASDK)\libvc.w32"
+				AdditionalLibraryDirectories=""
 				GenerateManifest="false"
 				ModuleDefinitionFile=".\idacompare.def"
 				GenerateDebugInformation="true"
@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="./../install_plw.bat"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -150,7 +150,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="$(IDASDK)\include\"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;__NT__;__IDP__;MAXSTR=1024"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -159,10 +159,11 @@
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
-				BrowseInformation="1"
+				BrowseInformation="0"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				CallingConvention="2"
+				ShowIncludes="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -178,11 +179,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/export:PLUGIN"
-				AdditionalDependencies="./../../libvc.w32/ida.lib odbc32.lib odbccp32.lib"
-				OutputFile="./IDA_Compare.plw"
-				LinkIncremental="1"
+				OutputFile=""
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\libvc.w32"
+				AdditionalLibraryDirectories=""
+				GenerateManifest="false"
 				ModuleDefinitionFile=".\idacompare.def"
 				ProgramDatabaseFile=".\Release/IDA_Compare.pdb"
 				RandomizedBaseAddress="1"
@@ -195,6 +196,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

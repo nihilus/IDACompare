@@ -10,6 +10,7 @@ OutputDir=./
 
 [Files]
 Source: IDA_Compare.plw; DestDir: {app}
+Source: IDA_Compare.p64; DestDir: {app}
 Source: IDASrvr.plw; DestDir: {app}
 Source: blank.mdb; DestDir: {app}
 Source: compare.vbs; DestDir: {app}

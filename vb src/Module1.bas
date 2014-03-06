@@ -19,90 +19,41 @@ Option Explicit
 '         this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 '         Place, Suite 330, Boston, MA 02111-1307 USA
 
-Public Declare Sub HideEA Lib "ida_compare.plw" (ByVal addr As Long)
-Public Declare Sub ShowEA Lib "ida_compare.plw" (ByVal addr As Long)
-Public Declare Function NextAddr Lib "ida_compare.plw" (ByVal addr As Long) As Long
-Public Declare Function PrevAddr Lib "ida_compare.plw" (ByVal addr As Long) As Long
-Public Declare Function OriginalByte Lib "ida_compare.plw" (ByVal addr As Long) As Byte
-Public Declare Function IDAFilePath Lib "ida_compare.plw" Alias "FilePath" (ByVal buf_maxpath As String) As Long
-Public Declare Function RootFileName Lib "ida_compare.plw" (ByVal buf_maxpath As String) As Long
-Public Declare Function ProcessState Lib "ida_compare.plw" () As Long
-Public Declare Function FuncIndex Lib "ida_compare.plw" (ByVal addr As Long) As Long
-Public Declare Function FuncArgSize Lib "ida_compare.plw" (ByVal Index As Long) As Long
-Public Declare Function FuncColor Lib "ida_compare.plw" (ByVal Index As Long) As Colors
-Public Declare Sub PatchByte Lib "ida_compare.plw" (ByVal addr As Long, ByVal valu As Byte)
-Public Declare Sub PatchWord Lib "ida_compare.plw" (ByVal addr As Long, ByVal valu As Long)
-Public Declare Sub DelFunc Lib "ida_compare.plw" (ByVal addr As Long)
-Public Declare Sub AddComment Lib "ida_compare.plw" (ByVal cmt As String, ByVal clr As Byte)
-Public Declare Sub AddProgramComment Lib "ida_compare.plw" (ByVal cmt As String)
-Public Declare Sub AddCodeXRef Lib "ida_compare.plw" (ByVal start As Long, ByVal endd As Long)
-Public Declare Sub DelCodeXRef Lib "ida_compare.plw" (ByVal start As Long, ByVal endd As Long)
-Public Declare Sub AddDataXRef Lib "ida_compare.plw" (ByVal start As Long, ByVal endd As Long)
-Public Declare Sub DelDataXRef Lib "ida_compare.plw" (ByVal start As Long, ByVal endd As Long)
-Public Declare Sub MessageUI Lib "ida_compare.plw" (ByVal Msg As String)
-Public Declare Sub MakeCode Lib "ida_compare.plw" (ByVal addr As Long)
-Public Declare Sub Undefine Lib "ida_compare.plw" (ByVal addr As Long)
-Public Declare Sub AnalyzeArea Lib "ida_compare.plw" (ByVal startat As Long, ByVal endat As Long)
-Public Declare Sub aGetName Lib "ida_compare.plw" Alias "GetName" (ByVal addr As Long, ByVal buf As String, ByVal bufSize As Long)
-Public Declare Sub SetComment Lib "ida_compare.plw" (ByVal addr As Long, ByVal comment As String)
-Public Declare Sub GetComment Lib "ida_compare.plw" (ByVal addr As Long, ByVal comment As String)
-Public Declare Function NumFuncs Lib "ida_compare.plw" () As Long
-Public Declare Function FunctionStart Lib "ida_compare.plw" (ByVal functionIndex As Long) As Long
-Public Declare Function FunctionEnd Lib "ida_compare.plw" (ByVal functionIndex As Long) As Long
-Public Declare Sub Jump Lib "ida_compare.plw" (ByVal offset As Long)
-Public Declare Sub RemvName Lib "ida_compare.plw" (ByVal offset As Long)
-Public Declare Sub Setname Lib "ida_compare.plw" (ByVal offset As Long, ByVal name As String)
-Public Declare Sub aRefresh Lib "ida_compare.plw" Alias "Refresh" ()
-Public Declare Function ScreenEA Lib "ida_compare.plw" () As Long
-Public Declare Sub SelBounds Lib "ida_compare.plw" (selstart As Long, selend As Long)
-Public Declare Function GetBytes Lib "ida_compare.plw" (ByVal offset As Long, buf As Byte, ByVal length As Long) As Long
-Private Declare Sub FuncName Lib "ida_compare.plw" (ByVal offset As Long, ByVal buf As String, ByVal bufSize As Long)
-Private Declare Function GetAsm Lib "ida_compare.plw" (ByVal offset As Long, ByVal buf As String, ByVal length As Long) As Long
 
-     
- 
-Enum Colors
-        COLOR_DEFAULT = &H1           ' Default
-        COLOR_REGCMT = &H2            ' Regular comment
-        COLOR_RPTCMT = &H3            ' Repeatable comment (comment defined somewhere else)
-        COLOR_AUTOCMT = &H4           ' Automatic comment
-        COLOR_INSN = &H5              ' Instruction
-        'COLOR_DATNAME = &H6           ' Dummy Data Name
-        'COLOR_DNAME = &H7             ' Regular Data Name
-        'COLOR_DEMNAME = &H8           ' Demangled Name
-        'COLOR_SYMBOL = &H9            ' Punctuation
-        'COLOR_CHAR = &HA              ' Char constant in instruction
-        'COLOR_STRING = &HB            ' String constant in instruction
-        'COLOR_NUMBER = &HC            ' Numeric constant in instruction
-        'COLOR_VOIDOP = &HD            ' Void operand
-        'COLOR_CREF = &HE              ' Code reference
-        'COLOR_DREF = &HF              ' Data reference
-        'COLOR_CREFTAIL = &H10         ' Code reference to tail byte
-        'COLOR_DREFTAIL = &H11         ' Data reference to tail byte
-        COLOR_ERROR = &H12            ' Error or problem
-        COLOR_PREFIX = &H13           ' Line prefix
-        COLOR_BINPREF = &H14          ' Binary line prefix bytes
-        COLOR_EXTRA = &H15            ' Extra line
-        COLOR_ALTOP = &H16            ' Alternative operand
-        'COLOR_HIDNAME = &H17          ' Hidden name
-        COLOR_LIBNAME = &H18          ' Library function name
-        COLOR_LOCNAME = &H19          ' Local variable name
-        COLOR_CODNAME = &H1A          ' Dummy code name
-        COLOR_ASMDIR = &H1B           ' Assembler directive
-        'COLOR_MACRO = &H1C            ' Macro
-        COLOR_DSTR = &H1D             ' String constant in data directive
-        COLOR_DCHAR = &H1E            ' Char constant in data directive
-        COLOR_DNUM = &H1F             ' Numeric constant in data directive
-        COLOR_KEYWORD = &H20          ' Keywords
-        'COLOR_REG = &H21              ' Register name
-        COLOR_IMPNAME = &H22          ' Imported name
-        'COLOR_SEGNAME = &H23          ' Segment name
-        'COLOR_UNKNAME = &H24          ' Dummy unknown name
-        COLOR_CNAME = &H25            ' Regular code name
-        'COLOR_UNAME = &H26            ' Regular unknown name
-        'COLOR_COLLAPSED = &H27        ' Collapsed line
-        'COLOR_FG_MAX = &H28           ' Max color number
-End Enum
+'this is a little stupid, but it is what it is..if the dll extension isnt dll, it must be declared explicitly
+'since we want to work with both the plw and the p64..we need declares for both, and choose the appropirate one at runtime.
+'at least the prototypes are the same between the two thanks to making the C shim layer universal..
+
+Private Declare Function IDAFilePath32 Lib "ida_compare.plw" Alias "FilePath" (ByVal buf_maxpath As String) As Long
+Private Declare Sub MessageUI32 Lib "ida_compare.plw" Alias "MessageUI" (ByVal Msg As String)
+Private Declare Sub GetName32 Lib "ida_compare.plw" Alias "GetName" (ByVal addr As Currency, ByVal buf As String, ByVal bufSize As Long)
+Private Declare Function NumFuncs32 Lib "ida_compare.plw" Alias "NumFuncs" () As Long
+Private Declare Function FunctionStart32 Lib "ida_compare.plw" Alias "FunctionStart" (ByVal functionIndex As Long) As Currency
+Private Declare Function FunctionEnd32 Lib "ida_compare.plw" Alias "FunctionEnd" (ByVal functionIndex As Long) As Currency
+Private Declare Sub FuncName32 Lib "ida_compare.plw" Alias "FuncName" (ByVal offset As Currency, ByVal buf As String, ByVal bufSize As Long)
+Private Declare Sub Setname32 Lib "ida_compare.plw" Alias "SetName" (ByVal offset As Currency, ByVal name As String)
+Private Declare Sub Refresh32 Lib "ida_compare.plw" Alias "Refresh" ()
+Private Declare Function GetBytes32 Lib "ida_compare.plw" Alias "GetBytes" (ByVal offset As Currency, buf As Byte, ByVal length As Long) As Long
+Private Declare Function GetAsm32 Lib "ida_compare.plw" Alias "GetAsm" (ByVal offset As Currency, ByVal buf As String, ByVal length As Long) As Long
+Private Declare Function Addx32 Lib "ida_compare.plw" Alias "Addx64" (ByVal offset As Currency, ByVal val As Long) As Currency
+Private Declare Function Subx32 Lib "ida_compare.plw" Alias "Subx64" (ByVal v0 As Currency, ByVal v1 As Currency) As Currency
+
+Private Declare Function IDAFilePath64 Lib "ida_compare.p64" Alias "FilePath" (ByVal buf_maxpath As String) As Long
+Private Declare Sub MessageUI64 Lib "ida_compare.p64" Alias "MessageUI" (ByVal Msg As String)
+Private Declare Sub GetName64 Lib "ida_compare.p64" Alias "GetName" (ByVal addr As Currency, ByVal buf As String, ByVal bufSize As Long)
+Private Declare Function NumFuncs64 Lib "ida_compare.p64" Alias "NumFuncs" () As Long
+Private Declare Function FunctionStart64 Lib "ida_compare.p64" Alias "FunctionStart" (ByVal functionIndex As Long) As Currency
+Private Declare Function FunctionEnd64 Lib "ida_compare.p64" Alias "FunctionEnd" (ByVal functionIndex As Long) As Currency
+Private Declare Sub FuncName64 Lib "ida_compare.p64" Alias "FuncName" (ByVal offset As Currency, ByVal buf As String, ByVal bufSize As Long)
+Private Declare Sub Setname64 Lib "ida_compare.p64" Alias "Setname" (ByVal offset As Currency, ByVal name As String)
+Private Declare Sub Refresh64 Lib "ida_compare.p64" Alias "Refresh" ()
+Private Declare Function GetBytes64 Lib "ida_compare.p64" Alias "GetBytes" (ByVal offset As Currency, buf As Byte, ByVal length As Long) As Long
+Private Declare Function GetAsm64 Lib "ida_compare.p64" Alias "GetAsm" (ByVal offset As Currency, ByVal buf As String, ByVal length As Long) As Long
+Private Declare Function Addx64 Lib "ida_compare.p64" (ByVal offset As Currency, ByVal val As Long) As Currency
+Private Declare Function Subx64 Lib "ida_compare.p64" (ByVal v0 As Currency, ByVal v1 As Currency) As Currency
+
+
+
 
 Public Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Public Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
@@ -114,6 +65,49 @@ Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 Public Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
 Public Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 
+Private Type MungeCurr
+    Value As Currency
+End Type
+
+Private Type Munge2Long
+    LoValue As Long
+    HiValue As Long
+End Type
+
+Global x64Mode As Boolean
+
+Function x64ToHex(v As Currency) As String
+    Dim c As MungeCurr
+    Dim l As Munge2Long
+    c.Value = v
+    LSet l = c
+    If l.HiValue = 0 Then
+        x64ToHex = Hex(l.LoValue)
+    Else
+        x64ToHex = Hex(l.HiValue) & Right("00000000" & Hex(l.LoValue), 8)
+    End If
+End Function
+
+'handles hex strings for 32bit and 64 bit numbers, leading 00's on high part not required, of course they are on lo if there is a high..
+Function HextoX64(s As String) As Currency
+    Dim c As MungeCurr
+    Dim l As Munge2Long
+    
+    Dim lo As String, hi As String
+    If Len(s) <= 8 Then
+        l.LoValue = CLng("&h" & s)
+    Else
+        lo = Right(s, 8)
+        hi = Left(s, Len(s) - 8)
+        l.LoValue = CLng("&h" & lo)
+        l.HiValue = CLng("&h" & hi)
+    End If
+    
+    LSet c = l
+    HextoX64 = c.Value
+    
+End Function
+
 Function isIde() As Boolean
     On Error GoTo hell
     Debug.Print 1 / 0
@@ -123,13 +117,69 @@ hell:
     isIde = True
 End Function
 
-Function GetFName(offset As Long) As String
+Function NumFuncs() As Long
+    If x64Mode Then
+        NumFuncs = NumFuncs64()
+    Else
+        NumFuncs = NumFuncs32()
+    End If
+End Function
+
+Function Refresh()
+    If x64Mode Then
+        Refresh64
+    Else
+        Refresh32
+    End If
+End Function
+
+
+Function FunctionStart(index As Long) As String
+    Dim c As Currency
+    If x64Mode Then
+        c = FunctionStart64(index)
+    Else
+        c = FunctionStart32(index)
+    End If
+    FunctionStart = x64ToHex(c)
+End Function
+
+Function FunctionEnd(index As Long) As String
+    Dim c As Currency
+    If x64Mode Then
+        c = FunctionEnd64(index)
+    Else
+        c = FunctionEnd32(index)
+    End If
+    FunctionEnd = x64ToHex(c)
+End Function
+
+Sub SetName(offset As String, newName As String)
+    Dim addr As Currency
+    
+    addr = HextoX64(offset)
+    
+    If x64Mode Then
+        Setname64 addr, newName
+    Else
+        Setname32 addr, newName
+    End If
+
+End Sub
+
+Function GetFName(offset As String) As String
     Dim buf As String
     Dim l As Long
+    Dim addr As Currency
     
+    addr = HextoX64(offset)
     buf = String(257, Chr(0))
     
-    FuncName offset, buf, Len(buf)
+    If x64Mode Then
+        FuncName64 addr, buf, Len(buf)
+    Else
+        FuncName32 addr, buf, Len(buf)
+    End If
     
     l = InStr(buf, Chr(0))
     If l > 2 Then buf = Mid(buf, 1, l - 1)
@@ -145,13 +195,17 @@ Function GetHex(x As Byte) As String
     GetHex = Y
 End Function
 
-Function GetAsmCode(offset) As String
+Private Function GetAsmCode(addr As Currency) As String
     Dim buf As String
     Dim sLen As Long
     
-    buf = String(257, Chr(0))
+    buf = String(500, Chr(0))
     
-    sLen = GetAsm(offset, buf, Len(buf))
+    If x64Mode Then
+        sLen = GetAsm64(addr, buf, Len(buf))
+    Else
+        sLen = GetAsm32(addr, buf, Len(buf))
+    End If
     
     If sLen > 1 Then
         GetAsmCode = Mid(buf, 1, sLen)
@@ -159,46 +213,83 @@ Function GetAsmCode(offset) As String
     
 End Function
 
-'Function GetAsmRange(start As Long, leng As Long) As String
-'    Dim x As String, tmp As String, i As Long, n As String
-'
-'    For i = 0 To leng - 1
-'
-'        tmp = GetAsmCode(start + i)
-'        If Len(tmp) > 0 Then x = x & tmp & vbCrLf
-'
-'    Next
-'
-'    GetAsmRange = x
-'
-'End Function
+ Function GetAsmByOffset(offset As String) As String
+    Dim buf As String
+    Dim sLen As Long
+    Dim addr As Currency
 
-Function GetAsmRange(start As Long, leng As Long) As String
+    addr = HextoX64(offset)
+    buf = String(257, Chr(0))
+
+    If x64Mode Then
+        sLen = GetAsm64(addr, buf, Len(buf))
+    Else
+        sLen = GetAsm32(addr, buf, Len(buf))
+    End If
+
+    If sLen > 1 Then
+        GetAsmByOffset = Mid(buf, 1, sLen)
+    End If
+
+End Function
+
+Function GetAsmRange(start As String, leng As Long) As String
     Dim x As String, tmp As String, i As Long, n As String
+    Dim addr As Currency
+
+    addr = HextoX64(start)
     
     For i = 0 To leng - 1
-        tmp = GetAsmCode(start + i)
+        tmp = GetAsmCode(addr)
         If Len(tmp) > 0 Then
-            
             If i <> 0 Then 'add in local labels...but not the function name (offset 0)
-                n = GetName(start + i)
+                n = GetName(addr)
                 If Len(n) > 0 Then x = x & n & ":" & vbCrLf
             End If
-            
             x = x & tmp & vbCrLf
-            
+        End If
+        If x64Mode Then
+            addr = Addx64(addr, 1)
+        Else
+            addr = Addx32(addr, 1)
         End If
     Next
-    
+
     GetAsmRange = x
     
 End Function
 
-Function HexDumpBytes(start As Long, leng As Long) As String
+'takes in two 64 bit hex number strings, outputs their difference as a long..
+Public Function SubX(v0 As String, v1 As String) As Long
+    Dim a As Currency, b As Currency, c As Currency, tmp
+    a = HextoX64(v0)
+    b = HextoX64(v1)
+    If x64Mode Then
+        c = Subx64(a, b)
+    Else
+        c = Subx32(a, b)
+    End If
+    tmp = x64ToHex(c)
+    If Len(tmp <= 8) Then
+        SubX = CLng("&h" & tmp)
+    Else
+        SubX = -1 'error not used as intended..
+    End If
+End Function
+
+Function HexDumpBytes(start As String, leng As Long) As String
     Dim buf() As Byte, i As Long, x As String
+    Dim addr As Currency
+    
+    addr = HextoX64(start)
     
     ReDim buf(1 To leng)
-    GetBytes start, buf(1), leng
+    
+    If x64Mode Then
+        GetBytes64 addr, buf(1), leng
+    Else
+        GetBytes32 addr, buf(1), leng
+    End If
     
     For i = 1 To leng
         x = x & GetHex(buf(i)) & " "
@@ -208,11 +299,16 @@ Function HexDumpBytes(start As Long, leng As Long) As String
     
 End Function
 
-Function GetName(offset) As String
+Private Function GetName(addr As Currency) As String
     Dim buf As String, x
-    buf = String(257, Chr(0))
     
-    aGetName CLng(offset), buf, 257
+    buf = String(300, Chr(0))
+    
+    If x64Mode Then
+        GetName64 addr, buf, 257
+    Else
+        GetName32 addr, buf, 257
+    End If
     
     x = InStr(buf, Chr(0))
     If x = 1 Then
@@ -225,15 +321,35 @@ Function GetName(offset) As String
 
 End Function
 
+'Private Function GetName(offset As String) As String
+'    Dim buf As String, x
+'    Dim addr As Currency
+'
+'    addr = HextoX64(offset)
+'    buf = String(257, Chr(0))
+'
+'    aGetName addr, buf, 257
+'
+'    x = InStr(buf, Chr(0))
+'    If x = 1 Then
+'        buf = ""
+'    ElseIf x > 2 Then
+'        buf = Mid(buf, 1, x - 1)
+'    End If
+'
+'    GetName = buf
+'
+'End Function
 
-Sub push(ary, value) 'this modifies parent ary object
+
+Sub push(ary, Value) 'this modifies parent ary object
     On Error GoTo init
     Dim x As Long
     x = UBound(ary) '<-throws Error If Not initalized
     ReDim Preserve ary(UBound(ary) + 1)
-    ary(UBound(ary)) = value
+    ary(UBound(ary)) = Value
     Exit Sub
-init:     ReDim ary(0): ary(0) = value
+init:     ReDim ary(0): ary(0) = Value
 End Sub
 
 Function FileExists(path) As Boolean
@@ -246,13 +362,20 @@ hell:
 End Function
 
 
-Function loadedFile() As String
+Function LoadedFile() As String
     Dim buf As String
     Dim retlen As Long
+    
     buf = String(261, Chr(0))
     
-    retlen = IDAFilePath(buf)
-    loadedFile = Mid(buf, 1, retlen)
+    If x64Mode Then
+        retlen = IDAFilePath64(buf)
+    Else
+        retlen = IDAFilePath32(buf)
+    End If
+    
+    LoadedFile = Mid(buf, 1, retlen)
+    
 End Function
 
 Function GetHextxt(t As TextBox, v As Long) As Boolean

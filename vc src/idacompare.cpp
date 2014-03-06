@@ -9,10 +9,11 @@
 
 NOTE: to build this project it is assumed you have an envirnoment variable 
 named IDASDK set to point to the base SDK directory. this env var is used in
-the C/C++ property tab, Preprocessor catagory, Additional include directories
-texbox so that this project can be built without having to be in a specific path
-Also used in the Linker - additional include directories.
+the C/C++ property tab, Preprocessor catagory. I have also had to harcode the paths
+to my ida sdk lib files below..apparently pragma comment does not accept env vars
 
+finally, the exports of this lib have been set to accept and return int64 types always
+for addresses. this lets 32/64 bit handling be more standardized in the layers above.
 
 'License:
 '
@@ -33,6 +34,20 @@ Also used in the Linker - additional include directories.
 
 */
 
+
+//#define __EA64__  //create the plugin for the 32 bit, 64 bit capable IDA
+
+#ifdef __EA64__
+	#pragma comment(linker, "/out:./../Ida_Compare.p64")
+	#pragma comment(lib, "D:\\idasdk65\\idasdk65\\lib\\x86_win_vc_64\\ida.lib")
+#else
+	#pragma comment(linker, "/out:./../Ida_Compare.plw")
+	#pragma comment(lib, "D:\\idasdk65\\idasdk65\\lib\\x86_win_vc_32\\ida.lib")
+#endif
+
+#pragma warning(disable:4996) //may be unsafe function
+#pragma warning(disable:4244) //conversion from '__int64' to 'ea_t', possible loss of data
+
 #include <windows.h>  //define this before other headers or get errors 
 #include <ida.hpp>
 #include <idp.hpp>
@@ -47,27 +62,15 @@ Also used in the Linker - additional include directories.
 #include <area.hpp>
 
 #undef strcpy
+#undef sprintf
+
 
 IDispatch        *IDisp;
 
 int StartPlugin(void);
+int idaapi init(void){ return PLUGIN_OK; }
+void idaapi run(int arg){ StartPlugin(); }
 
-//if no use windows.h you can declare API fx manually like
-//extern "C" int GetProcAddress(int h, char* fxName);
-//extern "C" int GetModuleHandle(char* modName);
-
-
-//Initialize.called once. PLUGIN_OK = unload+recall, PLUGIN_KEEP = keep in mem
-int idaapi init(void)
-{
-  if ( inf.filetype == f_ELF ) return PLUGIN_SKIP;
-
-  /*..init stuff here..*/
-  
-  return PLUGIN_KEEP;
-}
-
-//      Terminate.
 void idaapi term(void)
 {
 	try{
@@ -79,13 +82,6 @@ void idaapi term(void)
 	}
 	catch(...){};
 	
-}
-
-void idaapi run(int arg)
-{
- 
-  StartPlugin();
-
 }
 
 char comment[] = "idacompare";
@@ -175,102 +171,23 @@ int StartPlugin(){
 
 //Export API for the VB app to call and access IDA API data
 //_________________________________________________________________
-void __stdcall Jump      (int addr)  { jumpto(addr);           }
 void __stdcall Refresh   (void)      { refresh_idaview();      }
-int  __stdcall ScreenEA  (void)      { return get_screen_ea(); }
-int  __stdcall NumFuncs  (void)      { return get_func_qty();  }
-void __stdcall RemvName  (int addr)  { del_global_name(addr);  }
-void __stdcall Setname(int addr, const char* name){ set_name(addr, name); }
-//void __stdcall AddComment(char *cmt, char color){ generate_big_comment(cmt, color);}
-void __stdcall AddProgramComment(char *cmt){ add_pgm_cmt(cmt); }
-void __stdcall AddCodeXRef(int start, int end){ add_cref(start, end, cref_t(fl_F | XREF_USER) );}
-void __stdcall DelCodeXRef(int start, int end){ del_cref(start, end, 1 );}
-void __stdcall AddDataXRef(int start, int end){ add_dref(start, end, dref_t(dr_O | XREF_USER) );}
-void __stdcall DelDataXRef(int start, int end){ del_dref(start, end );}
+void __stdcall Setname( ea_t addr, const char* name){ set_name((ea_t)addr, name); }
 void __stdcall MessageUI(char *m){ msg(m);}
-void __stdcall PatchByte(int addr, char val){ patch_byte(addr, val); }
-void __stdcall PatchWord(int addr, int val){  patch_word(addr, val); }
-void __stdcall DelFunc(int addr){ del_func(addr); }
-int  __stdcall FuncIndex(int addr){ return get_func_num(addr); }
-void __stdcall SelBounds( ulong* selStart, ulong* selEnd){ read_selection(selStart, selEnd);}
-void __stdcall FuncName(int addr, char *buf, size_t bufsize){ get_func_name(addr, buf, bufsize);}
-int  __stdcall GetBytes(int offset, void *buf, int length){ return get_many_bytes(offset, buf, length);}
-void __stdcall Undefine(int offset){ autoMark(offset, AU_UNK); }
-char __stdcall OriginalByte(int offset){ return get_original_byte(offset); }
-
-void __stdcall SetComment(int offset, char* comm){set_cmt(offset,comm,false);}
-
-/*  old defs reworked..
-
-void __stdcall GetComment(int offset, char* buf){ 
-	char* tmp = get_cmt(offset,false);
-	if(tmp){
-		//MessageBox(0,tmp,"",0);
-		qstrncpy(buf,tmp, 800);
-	}
- 
- int __stdcall FilePath(char *buf){ 
-	int retlen=0;
-	char *str;
-
-	str = get_input_file_path();
-	qstrncpy(buf,str,MAX_PATH);
-	return strlen(buf);
-}
-
-int __stdcall RootFileName(char *buf){ 
-	int retlen=0;
-	char *str;
-
-	str = get_root_filename();
-	qstrncpy(buf,str,MAX_PATH);
-	return strlen(buf);
-}
-
-}*/
-
- int __stdcall GetComment(int offset, char* buf){ 
-	unsigned int sz = get_cmt(offset,false,buf,512);	
-	if(sz == -1) sz = get_cmt(offset,true,buf,512);
-	return sz;
-}
-
-int __stdcall FilePath(char *buf){ 
-	return get_input_file_path(buf,255);
-}
-
-int __stdcall RootFileName(char *buf){ 
-	return get_root_filename(buf,255);	
-}
+int  __stdcall FuncIndex(__int64 addr){ return get_func_num((ea_t)addr); }
+void __stdcall FuncName(__int64 addr, char *buf, size_t bufsize){ get_func_name((ea_t)addr, buf, bufsize);}
+int  __stdcall GetBytes(__int64 offset, void *buf, int length){ return get_many_bytes((ea_t)offset, buf, length);}
+int __stdcall FilePath(char *buf){ return get_input_file_path(buf,255); }
+int __stdcall NumFuncs  (void){ return get_func_qty(); }
 
 
-int __stdcall ProcessState(void){ return get_process_state(); }
-void __stdcall HideEA(int offset){	set_visible_item(offset, false); }
-void __stdcall ShowEA(int offset){	set_visible_item(offset, true); }
+//retrieves function names and jump labels 
+void __stdcall GetName(__int64 offset, char* buf, int bufsize){
 
-/*
-int __stdcall NextAddr(int offset){
-   areacb_t a;
-   return a.get_next_area(offset);
-}
-
-int __stdcall PrevAddr(int offset){
-	areacb_t a;
-    return a.get_prev_area(offset); 
-}
-*/
-
-
-//not working?
-//void __stdcall AnalyzeArea(int startat, int endat){ analyse_area(startat, endat);}
-
-//now working w/ labels
-void __stdcall GetName(int offset, char* buf, int bufsize){
-
-	get_true_name( BADADDR, offset, buf, bufsize );
+	get_true_name( BADADDR, (ea_t)offset, buf, bufsize );
 
 	if(strlen(buf) == 0){
-		func_t* f = get_func(offset);
+		func_t* f = get_func((ea_t)offset);
 		for(int i=0; i < f->llabelqty; i++){
 			if( f->llabels[i].ea == offset ){
 				int sz = strlen(f->llabels[i].name);
@@ -282,43 +199,48 @@ void __stdcall GetName(int offset, char* buf, int bufsize){
 
 }
 
-//not workign to make code and analyze
-void __stdcall MakeCode(int offset){
-	 
-	 /*autoMark(offset, AU_CODE); //not compliant with 4.8 ida sdk
-	 analyse_area(offset, (offset+1) );
-	 */
+bool FuncIndexOk(int n, bool warn = true){ //ida will crash if out of bounds..
+	
+	char buf[100];
+	if(n < 0 || n >= NumFuncs()){
+		if(warn){
+			sprintf(&buf[0], "Invalid FunctionStart(%x)", n);
+			MessageBoxA(0,buf,"PLW",0);
+		}
+		return false;
+	}
+	
+	return true;
 }
 
+__int64 __stdcall Addx64(__int64 base, unsigned int val){
+	return base + val;
+}
 
-int __stdcall FunctionStart(int n){
+__int64 __stdcall Subx64(__int64 v0, __int64 v1){
+	return v0 - v1;
+}
+
+__int64 __stdcall FunctionStart(int n){
+	if(!FuncIndexOk(n)) return 0;
 	func_t *clsFx = getn_func(n);
-	return clsFx->startEA;
+	return (__int64)clsFx->startEA;
 }
 
-int __stdcall FunctionEnd(int n){
+__int64 __stdcall FunctionEnd(int n){
+	if(!FuncIndexOk(n)) return 0;
 	func_t *clsFx = getn_func(n);
-	return clsFx->endEA;
+	return (__int64)clsFx->endEA;
 }
 
-int __stdcall FuncArgSize(int index){
-		func_t *clsFx = getn_func(index);
-		return clsFx->argsize ;
-}
-
-int __stdcall FuncColor(int index){
-		func_t *clsFx = getn_func(index);
-		return clsFx->color  ;
-}
-
-int __stdcall GetAsm(int addr, char* buf, int bufLen){
+int __stdcall GetAsm(__int64 addr, char* buf, int bufLen){
 
     flags_t flags;                                                       
     int sLen=0;
 
     flags = getFlags(addr);                        
     if(isCode(flags)) {                            
-        generate_disasm_line(addr, buf, bufLen, GENDSM_MULTI_LINE );
+        generate_disasm_line((ea_t)addr, buf, bufLen, GENDSM_MULTI_LINE );
         sLen = tag_remove(buf, buf, bufLen);  
     }
 

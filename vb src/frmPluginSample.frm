@@ -33,7 +33,7 @@ Begin VB.Form frmIDACompare
    Begin VB.CommandButton Command1 
       Caption         =   "new"
       Height          =   255
-      Left            =   6780
+      Left            =   6750
       TabIndex        =   4
       Top             =   120
       Width           =   735
@@ -99,7 +99,7 @@ Begin VB.Form frmIDACompare
          Caption         =   "Save Compare Snap 1"
          Height          =   375
          Index           =   0
-         Left            =   90
+         Left            =   135
          TabIndex        =   5
          Top             =   180
          Width           =   1815
@@ -228,7 +228,7 @@ Option Explicit
 '         this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 '         Place, Suite 330, Boston, MA 02111-1307 USA
 
-
+'added support 64 bit disassemblies (still requires 32 bit IDA) 3.6.14 -dzzie
 
 Public cn As New Connection
 Public dlg As New clsCmnDlg
@@ -248,13 +248,13 @@ Private Sub cmdAddSignature_Click()
     DoExport SignatureMode
 End Sub
 
-Private Sub cmdCompare_Click(Index As Integer)
+Private Sub cmdCompare_Click(index As Integer)
     On Error GoTo hell
     Dim pth As String
     Dim exe As String
     Dim r As Long, rr As Long
-    
-    If Index = 0 Then
+
+    If index = 0 Then
         pth = txtDB
     Else
         pth = DllPath & "signatures.mdb"
@@ -273,39 +273,39 @@ Private Sub cmdCompare_Click(Index As Integer)
             cn.Close
         End If
     End If
-    
+
     If Not FileExists(pth) Then
         MsgBox "Could not locate DB, """ & pth & """", vbInformation
         Exit Sub
     End If
-    
-    If Index = 1 Then     'save current db functions to tmp table for compare
+
+    If index = 1 Then     'save current db functions to tmp table for compare
         DoExport TmpMode  'to make sure saved and in same db as signatures so cheat
     End If
-                     
+
     exe = DllPath & "ida_compare.exe"
-    
+
     If Not FileExists(exe) Then
         MsgBox "Could not locate ida_compare?" & vbCrLf & vbCrLf & exe, vbInformation
         Exit Sub
     End If
-    
-    exe = exe & " """ & pth & """" & IIf(Index = 0, "", " /sigscan")
-    
+
+    exe = exe & " """ & pth & """" & IIf(index = 0, "", " /sigscan")
+
     Shell exe, vbNormalFocus
     Me.WindowState = vbMinimized
     'minimize ida
-    
+
 Exit Sub
 hell: MsgBox "Line: " & Erl & " Desc:" & Err.Description
-    
+
 End Sub
 
-Private Sub cmdExport_Click(Index As Integer)
+Private Sub cmdExport_Click(index As Integer)
     Dim mode As ExportModes
-    
-    mode = Index
-    
+
+    mode = index
+
     If mode = Compare2 And exportedA Then
         If MsgBox("You already saved this idb to table A do " & vbCrLf & _
                   "you really want to save the same idb to " & vbCrLf & _
@@ -313,7 +313,7 @@ Private Sub cmdExport_Click(Index As Integer)
             Exit Sub
         End If
     End If
-    
+
     If mode = compare1 And exportedB Then
          If MsgBox("You already saved this idb to table B do " & vbCrLf & _
                    "you really want to save the same idb to " & vbCrLf & _
@@ -321,21 +321,21 @@ Private Sub cmdExport_Click(Index As Integer)
             Exit Sub
         End If
     End If
-    
+
     DoExport mode
 End Sub
 
 Private Sub cmdImportNames_Click()
     On Error Resume Next
-    
+
     Dim idba, idbb, curidb
     Dim isTableA As Boolean
     Dim sigMode, activeTable
     Dim warned As Boolean
     Dim ignoreIt As Boolean
-    
-    curidb = LCase(FileNameFromPath(loadedFile))
-    
+
+    curidb = LCase(FileNameFromPath(LoadedFile))
+
     If Len(cn.ConnectionString) = 0 Then  'hasnt been opened yet
         If Not FileExists(txtDB) Then
             MsgBox "There is no database currently active", vbInformation
@@ -346,22 +346,22 @@ Private Sub cmdImportNames_Click()
     Else
         OpenDB cn, Empty 'use existing connection string
     End If
-    
+
     sigMode = IIf(InStr(1, cn.ConnectionString, "signatures.mdb", vbTextCompare) > 0, True, False)
-    
+
     If Not sigMode Then
         idba = LCase(cn.Execute("Select top 1 idb from a")!idb)
         idbb = LCase(cn.Execute("Select top 1 idb from b")!idb)
-        
+
         If idba = curidb And LCase(idba) = LCase(idbb) Then
             Dim x As VbMsgBoxResult
-            
+
             x = MsgBox("Both disassemblies in this database have the same filename." & _
                         vbCrLf & vbCrLf & "Would you like to import the names from Snapshot 1?", vbYesNoCancel)
-                        
+
             If x = vbCancel Then Exit Sub
             activeTable = IIf(x = vbYes, "a", "b")
-            
+
         ElseIf idba = curidb Then
             activeTable = "a"
         ElseIf idbb <> curidb Then
@@ -378,27 +378,27 @@ Private Sub cmdImportNames_Click()
             Exit Sub
         End If
     End If
-    
+
     Dim rs As Recordset
     Dim errors()
-    
+
     Set rs = cn.Execute("Select * from " & activeTable & " where len(newName)>0")
-    
+
     If rs Is Nothing Then
         MsgBox "No records had newNames to import"
         Exit Sub
     End If
-    
-    Dim startEa As Long, orgName As String, fname As String
-    
+
+    Dim startEa As String, orgName As String, fname As String
+
     While Not rs.EOF
         startEa = rs!startEa
         orgName = LCase(Trim(rs!fname))
         fname = Trim(LCase(GetFName(startEa)))
-        
+
         'MsgBox "Org " & orgName & "(" & Len(orgName) & ") Cur " & fname & "(" & Len(fname) & ")"
         'MsgBox Len(fname)
-        
+
         If fname <> orgName Then
             If Not warned Then
                 warned = True
@@ -408,18 +408,18 @@ Private Sub cmdImportNames_Click()
                     ignoreIt = True
                 End If
             End If
-            
+
             If ignoreIt Then
-                 Setname startEa, CStr(rs!newName)
+                 SetName startEa, CStr(rs!newName)
             Else
                 push errors, "Couldnt rename offset " & Hex(startEa) & " - name didnt match expected"
             End If
         Else
-            Setname startEa, CStr(rs!newName)
+            SetName startEa, CStr(rs!newName)
         End If
         rs.MoveNext
     Wend
-    
+
     Dim tmp
     tmp = Join(errors, vbCrLf)
     If Len(tmp) > 2 Then
@@ -427,36 +427,37 @@ Private Sub cmdImportNames_Click()
     Else
         MsgBox "Import Done!"
     End If
-    
-    aRefresh
-    
-    
+
+    Refresh
+
+
 End Sub
 
 Private Sub Command1_Click()
     Dim pth As String
     Dim base As String
-        
+
     On Error GoTo hell
-    
-    base = DllPath & "blank.mdb"
-    
+
+    'base = DllPath & "blank.mdb"
+    base = App.path & "\blank.mdb"
+
     If Not FileExists(base) Then
         MsgBox "Could not find blank database to use:" & vbCrLf & vbCrLf & _
                base, vbInformation
         Exit Sub
     End If
-    
+
     pth = dlg.SaveDialog(CustomFilter, , "Save new DB as..", , Me.hwnd)
     If Len(pth) = 0 Then Exit Sub
     If LCase(VBA.Right(pth, 4)) <> ".mdb" Then pth = pth & ".mdb"
-    
+
     FileCopy base, pth
     txtDB = pth
-    
+
     exportedA = False
     exportedB = False
-    
+
     Exit Sub
 hell:
     MsgBox Err.Description
@@ -472,32 +473,31 @@ Private Sub Command2_Click()
 End Sub
 
 
+ 
 Private Sub Form_Load()
     Dim li As ListItem
     Dim cnt As Long, i As Long
-    Dim startPos As Long, endPos As Long
- 
-'    Dim plw As String
-'
-'    If isIde() Then
-'        plw = App.path & "\..\ida_compare.plw"
-'        If FileExists(plw) Then LoadLibrary plw
-'    End If
+    Dim startPos As String, endPos As String
     
     Me.Move (Screen.Width / 2) - (Me.Width / 2), _
             (Screen.Height / 2) - (Me.Height / 2)
     
+    
+    Dim h As Long
+    h = GetModuleHandle("ida_compare.plw") 'if 0 it must be the .p64 that loaded us..
+    x64Mode = IIf(h = 0, True, False)
+    
     dlg.SetCustomFilter "Access Database (*.mdb)", "*.mdb"
     
     cnt = NumFuncs()
-    
+   
     For i = 0 To cnt - 1 'NumFuncs ary 0 based
         Set li = lv.ListItems.Add(, , i)
         startPos = FunctionStart(i)
         endPos = FunctionEnd(i)
-        li.SubItems(1) = Hex(startPos)
-        li.SubItems(2) = Hex(endPos)
-        li.SubItems(3) = endPos - startPos
+        li.SubItems(1) = startPos
+        li.SubItems(2) = endPos
+        li.SubItems(3) = SubX(endPos, startPos)
         li.SubItems(4) = GetFName(startPos)
     Next
     
@@ -509,9 +509,8 @@ End Sub
 Sub DoExport(mode As ExportModes)
     On Error GoTo hell
 
-    Dim leng As Long, start As Long
+    Dim leng As Long, start As String
     Dim buf() As Byte
-    Dim startPos As Long, endPos As Long
     Dim pth As String
     Dim bytes As String
     Dim asm As String
@@ -519,7 +518,7 @@ Sub DoExport(mode As ExportModes)
     Dim cnt As Long
     Dim idb As String
     Dim li As ListItem
-        
+
     If mode >= SignatureMode Then
         pth = DllPath & "signatures.mdb"
         'MsgBox "Signature mode db=" & pth & " Exists?: " & FileExists(pth)
@@ -528,21 +527,21 @@ Sub DoExport(mode As ExportModes)
         exportedA = IIf(mode = compare1, True, exportedA)
         exportedB = IIf(mode = compare1, exportedB, True)
     End If
-    
+
     If Not FileExists(pth) Then
         MsgBox "File not found, select mdb: " & pth, vbInformation
         Exit Sub
     End If
-    
+
     OpenDB cn, pth
-    
+
     Select Case mode
         Case compare1:      tbl = "a"
         Case Compare2:      tbl = "b"
         Case SignatureMode: tbl = "signatures"
         Case TmpMode:       tbl = "tmp"
     End Select
-    
+
     If mode < SignatureMode Then
         cnt = cn.Execute("Select count(autoid) as cnt from " & tbl)!cnt
         If cnt > 0 Then
@@ -555,32 +554,32 @@ Sub DoExport(mode As ExportModes)
     ElseIf mode = TmpMode Then
         cn.Execute "Delete from " & tbl
     End If
-    
-    pb.value = 0
+
+    pb.Value = 0
     pb.Max = lv.ListItems.Count
-    
+
     'idb = FileNameFromPath(loadedFile)
-    idb = loadedFile()
+    idb = LoadedFile()
     If Len(idb) > 254 Then idb = Right(idb, 254) 'in case its a binary of the same name but different paths...
     If Len(idb) = 0 Then idb = "sample" 'maybe they loaded a lib file?
-    
+
     For Each li In lv.ListItems
-    
+
         If mode = SignatureMode And Not li.Selected Then GoTo nextOne
-        
+
 1        leng = li.SubItems(3)
-2        start = CLng("&h" & li.SubItems(1))
-3        bytes = HexDumpBytes(start, leng)
-4        asm = GetAsmRange(start, leng)
+2        start = li.SubItems(1)
+3        bytes = HexDumpBytes(start, leng) 'debug me
+4        asm = GetAsmRange(start, leng)  'debug me
 5        Insert cn, tbl, "idb,bytes,disasm,index,leng,fname,startEA", idb, bytes, asm, li.Text, leng, li.SubItems(4), start
 
 nextOne:
-6        pb.value = pb.value + 1
+6        pb.Value = pb.Value + 1
     Next
 
-    pb.value = 0
+    pb.Value = 0
     If mode <> TmpMode Then MsgBox "Functions saved to mdb", vbInformation
-    
+
 Exit Sub
 hell: MsgBox "Error in DoExport: Line: " & Erl() & " Description: " & Err.Description
 End Sub
@@ -595,23 +594,24 @@ Private Sub lv_MouseUp(Button As Integer, Shift As Integer, x As Single, Y As Si
     If Button = 2 Then PopupMenu mnuPopup
 End Sub
 
-Private Sub mnuCheckAll_Click(Index As Integer)
-    
+Private Sub mnuCheckAll_Click(index As Integer)
+
     Dim li As ListItem
-    
+
 top:
     For Each li In lv.ListItems
-        Select Case Index
+        Select Case index
             Case 0: li.Selected = True
             Case 1: li.Selected = False
             Case 2: li.Selected = Not li.Selected
-            Case 3: If li.Selected Then lv.ListItems.Remove li.Index: GoTo top
-            Case 4: If Not li.Selected Then lv.ListItems.Remove li.Index: GoTo top
+            Case 3: If li.Selected Then lv.ListItems.Remove li.index: GoTo top
+            Case 4: If Not li.Selected Then lv.ListItems.Remove li.index: GoTo top
         End Select
     Next
-    
+
 End Sub
 
 Private Sub txtDB_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
+    On Error Resume Next
     txtDB = Data.Files(1)
 End Sub
