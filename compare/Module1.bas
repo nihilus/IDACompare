@@ -29,6 +29,85 @@ Global HighLightRunning As Boolean
 
 Const LANG_US = 1049
 
+Sub rtfHighlightDecompile(c_src As String, tb As RichTextBox)
+    
+    On Error Resume Next
+    
+    HighLightRunning = True
+    
+    Dim tmp() As String
+    Dim x, i As Long
+    
+    tb.Text = " "
+    tb.selStart = 0
+    tb.selLength = 1
+    tb.SelColor = vbBlack
+    tb.SelBold = False
+    
+    tb.Text = c_src
+    tmp() = Split(c_src, vbCrLf)
+    
+    rtf.SetWindowUpdate tb
+    
+    Dim curPos As Long
+    Dim a As Long
+    
+   'color code comments..
+    For i = 0 To UBound(tmp)
+        x = Trim(tmp(i))
+        
+        a = InStr(tmp(i), "//")
+        If a > 0 Then 'comment
+            tb.selStart = curPos + a
+            tb.selLength = Len(tmp(i)) - a
+            tb.SelColor = &H8000&
+        End If
+        
+        curPos = curPos + Len(tmp(i)) + 2 'for crlf
+    Next
+            
+            
+    'now we search for and highlight some C keywords in the function..
+    Dim k
+    Dim eol As Long
+    Dim nextSpace As Long
+    Dim keywords() As String
+    
+    keywords = Split("return,int,char,struct,HANDLE,if,else,{,},while,do,break", ",")
+    
+    For Each k In keywords
+        a = 0
+        Do
+            a = tb.Find(k, a, , rtfWholeWord)
+            If a > -1 Then
+                eol = InStr(a, tb.Text, vbCrLf)
+                nextSpace = InStr(a + 1, tb.Text, " ")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                nextSpace = InStr(a + 1, tb.Text, "(")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                nextSpace = InStr(a + 1, tb.Text, "{")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                nextSpace = InStr(a + 1, tb.Text, "{")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                nextSpace = InStr(a + 1, tb.Text, ";")
+                If nextSpace < eol And nextSpace > 0 Then eol = nextSpace
+                tb.selStart = a
+                tb.selLength = eol - a
+                tb.SelColor = vbBlue
+                tb.SelBold = True
+                a = a + tb.selLength
+            End If
+        Loop While a > 0
+    Next
+      
+    tb.selStart = 0
+    rtf.SetWindowUpdate tb, False
+    
+    HighLightRunning = False
+    
+End Sub
+
+
 Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
     
     On Error Resume Next
@@ -38,6 +117,13 @@ Sub rtfHighlightAsm(asm As String, c As CFunction, tb As RichTextBox)
     Dim tmp() As String
     Dim x, i As Long
     Const indentLen = 2
+    
+    'remove all old formatting
+    tb.Text = " "
+    tb.selStart = 0
+    tb.selLength = 1
+    tb.SelColor = vbBlack
+    tb.SelBold = False
     
     If c Is Nothing Then 'functions coming from lvExact dont have the class
         Set c = New CFunction

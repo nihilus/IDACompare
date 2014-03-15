@@ -1142,8 +1142,8 @@ Private Sub mnuDecompileSelected_Click()
                  If va <> 0 Then b = .Decompile(va)
             End If
             
-            If Len(a) > 0 Then txtA.Text = a
-            If Len(b) > 0 Then txtB.Text = b
+            If Len(a) > 0 Then rtfHighlightDecompile a, txtA
+            If Len(b) > 0 Then rtfHighlightDecompile b, txtB
     
         End With
         Exit Sub
@@ -1171,8 +1171,8 @@ Private Sub mnuDecompileSelected_Click()
         
     End With
     
-    If Len(a) > 0 Then txtA.Text = a
-    If Len(b) > 0 Then txtB.Text = b
+    If Len(a) > 0 Then rtfHighlightDecompile a, txtA
+    If Len(b) > 0 Then rtfHighlightDecompile b, txtB
     
         
     
@@ -1250,6 +1250,15 @@ Private Sub Form_Resize()
         DoMove
     End If
     
+    With lv1.ColumnHeaders(4)
+        .Width = lv1.Width - .left - 100
+    End With
+    With lv2.ColumnHeaders(4)
+        .Width = lv2.Width - .left - 100
+    End With
+    With lvExact.ColumnHeaders(5)
+        .Width = lvExact.Width - .left - 100
+    End With
     
 End Sub
 
@@ -1467,17 +1476,6 @@ Private Sub Form_Load()
             LoadDataBase currentMDB
         End If
     End If
-    
-    On Error Resume Next
-    With lv1.ColumnHeaders(4)
-        .Width = lv1.Width - .left - 100
-    End With
-    With lv2.ColumnHeaders(4)
-        .Width = lv2.Width - .left - 100
-    End With
-    With lvExact.ColumnHeaders(5)
-        .Width = lvExact.Width - .left - 100
-    End With
     
 End Sub
 
