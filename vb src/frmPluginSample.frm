@@ -418,6 +418,8 @@ Private Sub cmdImportNames_Click()
                 ret = SetName(startEa, CStr(rs!newName))
                 If ret <> 1 Then
                     push errors, "Couldnt rename offset " & Hex(startEa) & " to " & rs!newName & " - SetName returned " & ret
+                Else
+                    cn.Execute "Update " & activeTable & " set fname='" & CStr(rs!newName) & "' , newName='' where startEa='" & startEa & "'"
                 End If
             Else
                 push errors, "Couldnt rename offset " & Hex(startEa) & " - name didnt match expected"
@@ -427,6 +429,8 @@ Private Sub cmdImportNames_Click()
             ret = SetName(startEa, CStr(rs!newName))
             If ret <> 1 Then
                 push errors, "Couldnt rename offset " & Hex(startEa) & " to " & rs!newName & " - SetName returned " & ret
+            Else
+                cn.Execute "Update " & activeTable & " set fname='" & CStr(rs!newName) & "' , newName='' where startEa='" & startEa & "'"
             End If
         End If
         rs.MoveNext

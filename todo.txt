@@ -1,4 +1,5 @@
 
+
 rtfHighlightDecompile: highlight string literals? (error prone if embedded quotes..)
 
 integrate compare UI with IDASrvr so right click
