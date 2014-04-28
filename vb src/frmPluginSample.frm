@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmIDACompare 
    Caption         =   "IDA Compare"
    ClientHeight    =   3555
@@ -350,8 +350,8 @@ Private Sub cmdImportNames_Click()
     sigMode = IIf(InStr(1, cn.ConnectionString, "signatures.mdb", vbTextCompare) > 0, True, False)
 
     If Not sigMode Then
-        idba = LCase(cn.Execute("Select top 1 idb from a")!idb)
-        idbb = LCase(cn.Execute("Select top 1 idb from b")!idb)
+        idba = FileNameFromPath(LCase(cn.Execute("Select top 1 idb from a")!idb))
+        idbb = FileNameFromPath(LCase(cn.Execute("Select top 1 idb from b")!idb))
 
         If idba = curidb And LCase(idba) = LCase(idbb) Then
             Dim x As VbMsgBoxResult
@@ -365,7 +365,10 @@ Private Sub cmdImportNames_Click()
         ElseIf idba = curidb Then
             activeTable = "a"
         ElseIf idbb <> curidb Then
-            MsgBox "Could not find an entry for the current idb in this database!"
+            MsgBox "Could not find an entry for the current idb in this database!" & vbCrLf & vbCrLf & _
+                   "CurDB: " & curidb & vbCrLf & _
+                   "IDB_A: " & idba & vbCrLf & _
+                   "IDB_B: " & idbb
             Exit Sub
         Else
             activeTable = "b"
@@ -390,12 +393,14 @@ Private Sub cmdImportNames_Click()
     End If
 
     Dim startEa As String, orgName As String, fname As String
-
+    Dim count As Long, ret As Long
+    
     While Not rs.EOF
         startEa = rs!startEa
         orgName = LCase(Trim(rs!fname))
         fname = Trim(LCase(GetFName(startEa)))
-
+        count = count + 1
+        
         'MsgBox "Org " & orgName & "(" & Len(orgName) & ") Cur " & fname & "(" & Len(fname) & ")"
         'MsgBox Len(fname)
 
@@ -410,12 +415,19 @@ Private Sub cmdImportNames_Click()
             End If
 
             If ignoreIt Then
-                 SetName startEa, CStr(rs!newName)
+                ret = SetName(startEa, CStr(rs!newName))
+                If ret <> 1 Then
+                    push errors, "Couldnt rename offset " & Hex(startEa) & " to " & rs!newName & " - SetName returned " & ret
+                End If
             Else
                 push errors, "Couldnt rename offset " & Hex(startEa) & " - name didnt match expected"
             End If
+            
         Else
-            SetName startEa, CStr(rs!newName)
+            ret = SetName(startEa, CStr(rs!newName))
+            If ret <> 1 Then
+                push errors, "Couldnt rename offset " & Hex(startEa) & " to " & rs!newName & " - SetName returned " & ret
+            End If
         End If
         rs.MoveNext
     Wend
@@ -423,9 +435,9 @@ Private Sub cmdImportNames_Click()
     Dim tmp
     tmp = Join(errors, vbCrLf)
     If Len(tmp) > 2 Then
-        MsgBox "Imports done with Errors: " & vbCrLf & vbCrLf & tmp, vbInformation
+        MsgBox count & " Imports done with " & UBound(errors) & " Errors: " & vbCrLf & vbCrLf & tmp, vbInformation
     Else
-        MsgBox "Import Done!"
+        MsgBox count & " Import Done!"
     End If
 
     Refresh
@@ -484,8 +496,16 @@ Private Sub Form_Load()
     
     
     Dim h As Long
-    h = GetModuleHandle("ida_compare.plw") 'if 0 it must be the .p64 that loaded us..
+    
+    'If isIde Then 'this doesnt work in IDE testing because it wont load outside of IDA...
+    '    h = GetModuleHandle("C:\IDA6.5\plugins\ida_compare.plw")
+    'Else
+        h = GetModuleHandle("ida_compare.plw") 'if 0 it must be the .p64 that loaded us..
+    'End If
+    
     x64Mode = IIf(h = 0, True, False)
+    
+    Me.Caption = Me.Caption & IIf(h = 0, " (64 bit)", " (32 Bit)")
     
     dlg.SetCustomFilter "Access Database (*.mdb)", "*.mdb"
     
@@ -556,7 +576,7 @@ Sub DoExport(mode As ExportModes)
     End If
 
     pb.Value = 0
-    pb.Max = lv.ListItems.Count
+    pb.Max = lv.ListItems.count
 
     'idb = FileNameFromPath(loadedFile)
     idb = LoadedFile()

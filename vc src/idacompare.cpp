@@ -172,13 +172,17 @@ int StartPlugin(){
 //Export API for the VB app to call and access IDA API data
 //_________________________________________________________________
 void __stdcall Refresh   (void)      { refresh_idaview();      }
-void __stdcall Setname( ea_t addr, const char* name){ set_name((ea_t)addr, name); }
 void __stdcall MessageUI(char *m){ msg(m);}
 int  __stdcall FuncIndex(__int64 addr){ return get_func_num((ea_t)addr); }
 void __stdcall FuncName(__int64 addr, char *buf, size_t bufsize){ get_func_name((ea_t)addr, buf, bufsize);}
 int  __stdcall GetBytes(__int64 offset, void *buf, int length){ return get_many_bytes((ea_t)offset, buf, length);}
 int __stdcall FilePath(char *buf){ return get_input_file_path(buf,255); }
 int __stdcall NumFuncs  (void){ return get_func_qty(); }
+
+int  __stdcall SetName( __int64 addr, const char* name){
+	//MessageBoxA(0,name,"",0);
+	return set_name((ea_t)addr, name); 
+}
 
 
 //retrieves function names and jump labels 

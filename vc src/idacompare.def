@@ -7,7 +7,7 @@ LIBRARY IDA_Compare
 		GetBytes
 		FuncName
 		GetAsm
-		Setname
+		SetName
 		Refresh
 		FuncIndex
 		MessageUI

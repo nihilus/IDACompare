@@ -31,7 +31,7 @@ Private Declare Function NumFuncs32 Lib "ida_compare.plw" Alias "NumFuncs" () As
 Private Declare Function FunctionStart32 Lib "ida_compare.plw" Alias "FunctionStart" (ByVal functionIndex As Long) As Currency
 Private Declare Function FunctionEnd32 Lib "ida_compare.plw" Alias "FunctionEnd" (ByVal functionIndex As Long) As Currency
 Private Declare Sub FuncName32 Lib "ida_compare.plw" Alias "FuncName" (ByVal offset As Currency, ByVal buf As String, ByVal bufSize As Long)
-Private Declare Sub Setname32 Lib "ida_compare.plw" Alias "SetName" (ByVal offset As Currency, ByVal name As String)
+Private Declare Function Setname32 Lib "ida_compare.plw" Alias "SetName" (ByVal offset As Currency, ByVal name As String) As Long
 Private Declare Sub Refresh32 Lib "ida_compare.plw" Alias "Refresh" ()
 Private Declare Function GetBytes32 Lib "ida_compare.plw" Alias "GetBytes" (ByVal offset As Currency, buf As Byte, ByVal length As Long) As Long
 Private Declare Function GetAsm32 Lib "ida_compare.plw" Alias "GetAsm" (ByVal offset As Currency, ByVal buf As String, ByVal length As Long) As Long
@@ -45,7 +45,7 @@ Private Declare Function NumFuncs64 Lib "ida_compare.p64" Alias "NumFuncs" () As
 Private Declare Function FunctionStart64 Lib "ida_compare.p64" Alias "FunctionStart" (ByVal functionIndex As Long) As Currency
 Private Declare Function FunctionEnd64 Lib "ida_compare.p64" Alias "FunctionEnd" (ByVal functionIndex As Long) As Currency
 Private Declare Sub FuncName64 Lib "ida_compare.p64" Alias "FuncName" (ByVal offset As Currency, ByVal buf As String, ByVal bufSize As Long)
-Private Declare Sub Setname64 Lib "ida_compare.p64" Alias "Setname" (ByVal offset As Currency, ByVal name As String)
+Private Declare Function Setname64 Lib "ida_compare.p64" Alias "SetName" (ByVal offset As Currency, ByVal name As String) As Long
 Private Declare Sub Refresh64 Lib "ida_compare.p64" Alias "Refresh" ()
 Private Declare Function GetBytes64 Lib "ida_compare.p64" Alias "GetBytes" (ByVal offset As Currency, buf As Byte, ByVal length As Long) As Long
 Private Declare Function GetAsm64 Lib "ida_compare.p64" Alias "GetAsm" (ByVal offset As Currency, ByVal buf As String, ByVal length As Long) As Long
@@ -154,18 +154,26 @@ Function FunctionEnd(index As Long) As String
     FunctionEnd = x64ToHex(c)
 End Function
 
-Sub SetName(offset As String, newName As String)
+Function SetName(offset As String, newName As String) As Long
     Dim addr As Currency
+    Dim ret As Long
     
-    addr = HextoX64(offset)
+    On Error GoTo hell
+    
+1    addr = HextoX64(offset)
     
     If x64Mode Then
-        Setname64 addr, newName
+2        ret = Setname64(addr, newName)
     Else
-        Setname32 addr, newName
+3        ret = Setname32(addr, newName)
     End If
 
-End Sub
+    SetName = ret
+    
+    Exit Function
+hell:
+    MsgBox "Error in setname: " & Erl & " Desc: " & Err.Description
+End Function
 
 Function GetFName(offset As String) As String
     Dim buf As String
