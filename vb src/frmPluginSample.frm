@@ -173,6 +173,16 @@ Begin VB.Form frmIDACompare
    End
    Begin VB.Label Label1 
       Caption         =   "Current MDB"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00FF0000&
       Height          =   255
       Left            =   120
       TabIndex        =   2
@@ -612,6 +622,41 @@ Private Sub Form_Unload(Cancel As Integer)
     On Error Resume Next
     cn.Close
     Set dlg = Nothing
+End Sub
+
+Private Sub Label1_Click()
+    
+    On Error Resume Next
+    Dim idba, idbb, curidb, sigMode
+    
+    curidb = LoadedFile
+
+    If Len(cn.ConnectionString) = 0 Then  'hasnt been opened yet
+        If Not FileExists(txtDB) Then
+            MsgBox "There is no database currently active", vbInformation
+            Exit Sub
+        Else
+            If Not OpenDB(cn, txtDB) Then Exit Sub
+        End If
+    Else
+        OpenDB cn, Empty 'use existing connection string
+    End If
+
+    sigMode = IIf(InStr(1, cn.ConnectionString, "signatures.mdb", vbTextCompare) > 0, True, False)
+
+    If Not sigMode Then
+        idba = cn.Execute("Select top 1 idb from a")!idb
+        idbb = cn.Execute("Select top 1 idb from b")!idb
+    
+        MsgBox "Cur_Idb: " & curidb & vbCrLf & _
+               "Table 1: " & idba & vbCrLf & _
+               "Table 2: " & idbb, vbInformation
+               
+    Else
+        MsgBox "Cur_Idb: " & curidb & vbCrLf & "Signature scan mode", vbInformation
+    End If
+    
+
 End Sub
 
 Private Sub lv_MouseUp(Button As Integer, Shift As Integer, x As Single, Y As Single)
