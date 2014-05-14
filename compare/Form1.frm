@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{0E59F1D2-1FBE-11D0-8FF2-00A0D10038BC}#1.0#0"; "msscript.ocx"
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
 Begin VB.Form Form1 
    Caption         =   "IDACompare"
@@ -866,7 +866,44 @@ Private Declare Function ReleaseCapture Lib "user32" () As Long
 '
 'End Sub
 
- 
+ Private Sub lv2_KeyDown(KeyCode As Integer, Shift As Integer)
+    Dim i As Long
+    Dim li As ListItem
+    Dim tlv As ListView
+    Set tlv = lv2
+    If KeyCode = 46 Then 'del key
+        For i = tlv.ListItems.Count To 1 Step -1
+            Set li = tlv.ListItems(i)
+            If li.Selected Then tlv.ListItems.Remove li.index
+        Next
+    End If
+End Sub
+
+Private Sub lv1_KeyDown(KeyCode As Integer, Shift As Integer)
+    Dim i As Long
+    Dim li As ListItem
+    Dim tlv As ListView
+    Set tlv = lv1
+    If KeyCode = 46 Then 'del key
+        For i = tlv.ListItems.Count To 1 Step -1
+            Set li = tlv.ListItems(i)
+            If li.Selected Then tlv.ListItems.Remove li.index
+        Next
+    End If
+End Sub
+
+Private Sub lvExact_KeyDown(KeyCode As Integer, Shift As Integer)
+    Dim i As Long
+    Dim li As ListItem
+    Dim tlv As ListView
+    Set tlv = lvExact
+    If KeyCode = 46 Then 'del key
+        For i = tlv.ListItems.Count To 1 Step -1
+            Set li = tlv.ListItems(i)
+            If li.Selected Then tlv.ListItems.Remove li.index
+        Next
+    End If
+End Sub
 
 Private Sub mnuRemove_Click(index As Integer)
     
@@ -1060,6 +1097,8 @@ End Sub
 
 Private Sub lvExact_KeyPress(KeyAscii As Integer)
     On Error Resume Next
+    'MsgBox KeyAscii '8 is back key, del key doesnt show up..
+    
     If Chr(KeyAscii) = "p" Then
         mnuProfileSelected_Click
         KeyAscii = 0 'have to eat the keypress so that it doesnt auto find the first function starting with p
@@ -1210,6 +1249,8 @@ Private Sub Command1_Click(index As Integer)
 End Sub
 
 Private Sub Form_Resize()
+    
+    If Me.WindowState = vbMinimized Then Exit Sub
     
     On Error Resume Next
     If Me.Height < 9030 Then Me.Height = 9030

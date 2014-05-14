@@ -30,7 +30,7 @@ HelpContextID="0"
 CompatibleMode="0"
 MajorVer=1
 MinorVer=2
-RevisionVer=35
+RevisionVer=36
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Author David Zimmer <dzzie@yahoo.com>"
@@ -53,3 +53,6 @@ MaxNumberOfThreads=1
 
 [MS Transaction Server]
 AutoRefresh=1
+
+[fastBuild]
+fullPath=D:\_code\iDef\IDACompare\ida_compare.exe

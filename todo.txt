@@ -1,4 +1,6 @@
 
+way to save results so you dont have to recompare everything (big files can take a while)
+
 
 rtfHighlightDecompile: highlight string literals? (error prone if embedded quotes..)
 
