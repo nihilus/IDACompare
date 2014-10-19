@@ -653,6 +653,9 @@ Begin VB.Form Form1
       Begin VB.Menu mnuTopCopyFuncNames 
          Caption         =   "Copy Function Names"
       End
+      Begin VB.Menu mnuLVPrefixAll 
+         Caption         =   "Prefix All"
+      End
    End
    Begin VB.Menu mnuPopup 
       Caption         =   "mnuPopup"
@@ -903,6 +906,41 @@ Private Sub lvExact_KeyDown(KeyCode As Integer, Shift As Integer)
             If li.Selected Then tlv.ListItems.Remove li.index
         Next
     End If
+End Sub
+
+Private Sub mnuLVPrefixAll_Click()
+
+    On Error Resume Next
+    Dim li As ListItem
+    Dim tmp As String
+    
+    If selLV Is Nothing Then Exit Sub
+     
+    If selLV.ListItems.Count < 1 Then
+        MsgBox "There are no names in this table to prefix.", vbInformation
+        Exit Sub
+    End If
+    
+    Dim newName As String
+    Dim tName As String
+    Dim pFix As String
+    
+    pFix = InputBox("Enter prefix to add to all of these functions:", , "new_")
+    pFix = Replace(pFix, "'", "")
+    If Len(pFix) = 0 Then Exit Sub
+    
+    tName = IIf(selLV.Name = "lv1", "a", "b")
+    
+    For Each li In selLV.ListItems
+        newName = pFix & li.SubItems(2)
+        cn.Execute "Update " & tName & " set newName='" & newName & "' where autoid=" & li.Text
+        li.SubItems(2) = newName
+    Next
+    
+    MsgBox "Ok your mdb signature database has been updated with the changes." & vbCrLf & _
+            "to apply the changes to the IDB disasm, launch the ida_compare plugin" & vbCrLf & _
+            "and tell it to import the new names to the idb", vbInformation
+                
 End Sub
 
 Private Sub mnuRemove_Click(index As Integer)
